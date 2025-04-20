@@ -31,6 +31,6 @@
             </div>
         </form>
     </div>
-    <a href="login" class="login__link">ログインはこちら</a>
+    <a href="/login" class="login__link">ログインはこちら</a>
 </div>
 @endsection

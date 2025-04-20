@@ -8,20 +8,27 @@
 <div class="login-container">
     <h1 class="login__title">ログイン</h1>
     @if (session('message'))
-        <p class="session-message">{{ session('message') }}</p>
+    <p class="session-message">{{ session('message') }}</p>
     @endif
     <div class="login-inner">
-        <form action="" class="login__form">
+        <form action="/login" method="post" class="login__form">
+            @csrf
             <div class="form-item">
                 <p class="form-item__text">メールアドレス</p>
-                <input type="email">
+                <input type="email" name="email">
+                @error('email')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
             </div>
             <div class="form-item">
                 <p class="form-item__text">パスワード</p>
-                <input type="password">
+                <input type="password" name="password">
+                @error('password')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
             </div>
             <div class="form-item">
-                <button class="form-item__button">ログインする</button>
+                <input type="submit" value="ログインする">
             </div>
         </form>
     </div>

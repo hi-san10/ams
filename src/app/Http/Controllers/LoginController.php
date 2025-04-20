@@ -8,11 +8,15 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\CertificationMail;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\LoginRequest;
+use Illuminate\Support\Facades\Auth;
+
 
 class LoginController extends Controller
 {
-    public function login()
+    public function getLogin()
     {
+        // dd('no');
         return view('login');
     }
 
@@ -57,5 +61,34 @@ class LoginController extends Controller
         Mail::to($email)->send(new CertificationMail($email));
 
         return view('authInduction', compact('email'));
+    }
+
+    public function postLogin(LoginRequest $request)
+    {
+        $email = $request->email;
+        $user = User::where('email', $email)->first();
+
+        if (is_null($user))
+        {
+            return back()->with('message', 'ログイン情報が登録されていません');
+        }
+
+        if (!Hash::check($request->password, $user->password))
+        {
+            return back()->with('message', 'パスワードが違います');
+
+        } elseif (is_null($user->email_verified_at)) {
+            return view('authInduction', compact('email'));
+        }
+
+        $credentials = ([
+            'email' => $email,
+            'password' => $request->password
+        ]);
+
+        Auth::attempt($credentials);
+        $request->session()->regenerate();
+
+        dd(Auth::check());
     }
 }

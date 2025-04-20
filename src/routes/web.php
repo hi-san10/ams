@@ -18,12 +18,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('login', [LoginController::class, 'login']);
+Route::get('/login', [LoginController::class, 'getLogin'])->name('login');
+Route::post('/login', [LoginController::class, 'postLogin']);
 
-Route::get('register', [LoginController::class, 'register']);
+Route::get('/register', [LoginController::class, 'register']);
+Route::post('/register/store', [LoginController::class, 'store']);
 
-Route::post('register/store', [LoginController::class, 'store']);
+Route::get('/verification/{email}', [LoginController::class, 'verification'])->name('verification');
 
-Route::get('verification/{email}', [LoginController::class, 'verification'])->name('verification');
+Route::get('/resend/{email}', [LoginController::class, 'resend'])->name('resend');
 
-Route::get('resend/{email}', [LoginController::class, 'resend'])->name('resend');
