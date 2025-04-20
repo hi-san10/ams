@@ -9,6 +9,7 @@ use App\Mail\CertificationMail;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -25,7 +26,7 @@ class LoginController extends Controller
         return view('register');
     }
 
-    public function store(Request $request)
+    public function store(RegisterRequest $request)
     {
         $email = $request->email;
 
