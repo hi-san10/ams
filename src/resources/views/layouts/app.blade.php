@@ -13,11 +13,11 @@
 <body>
     <header class="ams-header">
         <div class="header-logo">
-            <img src="{{ asset('img/logo.svg') }}" alt="">
+            <img class="header-logo__img" src="{{ asset('img/logo.svg') }}" alt="">
         </div>
         @if (Auth::check())
         <div class="header__nav">
-            <ul>
+            <ul class="nav-list">
                 <li><a href="">勤怠</a></li>
                 <li><a href="">勤怠一覧</a></li>
                 <li><a href="">申請</a></li>

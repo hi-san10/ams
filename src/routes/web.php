@@ -1,7 +1,9 @@
 <?php
 
-use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\AttendanceController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -14,9 +16,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 Route::get('/login', [LoginController::class, 'getLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'postLogin']);
@@ -29,4 +31,10 @@ Route::post('/register/store', [LoginController::class, 'store']);
 Route::get('/verification/{email}', [LoginController::class, 'verification'])->name('verification');
 
 Route::get('/resend/{email}', [LoginController::class, 'resend'])->name('resend');
+
+Route::group(['prefix' => 'attendance'], function()
+{
+    Route::get('/', [AttendanceController::class, 'index'])->middleware('auth');
+});
+
 
