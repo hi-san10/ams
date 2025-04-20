@@ -90,6 +90,16 @@ class LoginController extends Controller
         Auth::attempt($credentials);
         $request->session()->regenerate();
 
-        dd(Auth::check());
+        return view('attendance');
+
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return view('login');
     }
 }

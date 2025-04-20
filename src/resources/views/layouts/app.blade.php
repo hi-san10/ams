@@ -15,6 +15,16 @@
         <div class="header-logo">
             <img src="{{ asset('img/logo.svg') }}" alt="">
         </div>
+        @if (Auth::check())
+        <div class="header__nav">
+            <ul>
+                <li><a href="">勤怠</a></li>
+                <li><a href="">勤怠一覧</a></li>
+                <li><a href="">申請</a></li>
+                <li><a href="/logout">ログアウト</a></li>
+            </ul>
+        </div>
+        @endif
     </header>
     @yield('content')
 </body>
