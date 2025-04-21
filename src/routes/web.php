@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\RestController;
 
 
 /*
@@ -16,9 +17,9 @@ use App\Http\Controllers\AttendanceController;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+Route::get('/', function () {
+    return view('login');
+});
 
 Route::get('/login', [LoginController::class, 'getLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'postLogin']);
@@ -35,6 +36,14 @@ Route::get('/resend/{email}', [LoginController::class, 'resend'])->name('resend'
 Route::group(['prefix' => 'attendance'], function()
 {
     Route::get('/', [AttendanceController::class, 'index'])->middleware('auth');
+
+    Route::post('/start', [AttendanceController::class, 'start']);
+
+    Route::patch('/end', [AttendanceController::class, 'end']);
 });
+
+Route::post('/rest/start', [RestController::class, 'start']);
+
+Route::patch('/rest/end', [RestController::class, 'end']);
 
 

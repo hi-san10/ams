@@ -7,14 +7,43 @@
 @section('content')
 <div class="attendance-container">
     <div class="container-inner">
-        <p class="work-status">勤務外</p>
+        <p class="work-status">
+            @if (is_null($user))
+                勤務外
+            @elseif ($end)
+                退勤済
+            @else
+                出勤中
+            @endif
+        </p>
         <p class="work-day">{{ $currentTime->isoFormat('YYYY年M月D日(ddd)') }}</p>
         <p class="current-time">{{ $currentTime->format('H:i') }}</p>
     </div>
     <div class="container-inner">
-        <form action="" class="attendance__form">
-            <input type="submit" class="stamp" value="出勤">
-        </form>
+        @if (!$user)
+            <form action="/attendance/start" class="attendance__form" method="post">
+                @csrf
+                <input type="submit" class="stamp" value="出勤">
+            </form>
+        @elseif ($end)
+            <p class="attendance-massage">お疲れ様でした。</p>
+        @elseif (!$rest)
+            <form action="/rest/end" class="attendance__form" method="post">
+                @method('patch')
+                @csrf
+                <input type="submit" class="stamp" value="休憩戻">
+            </form>
+        @else
+            <form action="/attendance/end" class="attendance__form" method="post">
+                @method('patch')
+                @csrf
+                <input type="submit" class="stamp" value="退勤">
+            </form>
+            <form action="/rest/start" class="attendance_form" method="post">
+                @csrf
+                <input type="submit" class="stamp" value="休憩入">
+            </form>
+        @endif
     </div>
 </div>
 @endsection

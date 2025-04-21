@@ -17,7 +17,6 @@ class LoginController extends Controller
 {
     public function getLogin()
     {
-        // dd('no');
         return view('login');
     }
 
@@ -90,7 +89,7 @@ class LoginController extends Controller
         Auth::attempt($credentials);
         $request->session()->regenerate();
 
-        return view('attendance');
+        return redirect('attendance');
 
     }
 
