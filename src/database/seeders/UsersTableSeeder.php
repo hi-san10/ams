@@ -1,0 +1,28 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+
+class UsersTableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $content = [
+            'name' => 'mm',
+            'email' => 'm@mm',
+            'password' => Hash::make('00000000'),
+            'email_verified_at' => CarbonImmutable::today()
+        ];
+
+        DB::table('users')->insert($content);
+    }
+}
