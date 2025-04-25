@@ -22,7 +22,7 @@ class AttendanceController extends Controller
         return view('attendance', compact('currentTime', 'user', 'workEnd', 'rest'));
     }
 
-    public function start(Request $request)
+    public function start()
     {
         Attendance::create([
             'user_id' => Auth::id(),
