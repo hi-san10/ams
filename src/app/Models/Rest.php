@@ -12,6 +12,7 @@ class Rest extends Model
     protected $fillable = [
         'attendance_id',
         'start_time',
-        'end_time'
+        'end_time',
+        'total_time'
     ];
 }

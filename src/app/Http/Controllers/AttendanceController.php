@@ -14,13 +14,12 @@ class AttendanceController extends Controller
     {
         $currentTime = CarbonImmutable::now();
 
-        // $user = User::whereId(Auth::id())->first();
-        $user = Attendance::where('user_id', Auth::id())->whereDate('start_time', CarbonImmutable::today())->first();
-        $end = Attendance::where('user_id', Auth::id())->whereDate('end_time', CarbonImmutable::today())->exists();
-        $rest = Rest::where('attendance_id', $user->id)->whereDate('end_time', CarbonImmutable::today())->exists();
-        // dd($user);
+        $user = Attendance::where('user_id', Auth::id())->whereDate('start_time', $currentTime)->first();
+        $rest = Rest::when($user, fn ($query) => $query->where('attendance_id', $user->id)->whereDate('start_time', $currentTime)
+        ->where('end_time', null))->exists();
+        $workEnd = Attendance::where('user_id', Auth::id())->whereDate('end_time', $currentTime)->exists();
 
-        return view('attendance', compact('currentTime', 'user', 'end', 'rest'));
+        return view('attendance', compact('currentTime', 'user', 'workEnd', 'rest'));
     }
 
     public function start(Request $request)

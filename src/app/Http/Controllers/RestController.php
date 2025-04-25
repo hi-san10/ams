@@ -26,8 +26,14 @@ class RestController extends Controller
     {
         $user = Attendance::where('user_id', Auth::id())->whereDate('start_time', CarbonImmutable::today())->first();
 
+        $lastRest = Rest::latest('attendance_id', $user->id)->first();
+
+        $restStart = strtotime($lastRest->start_time);
+        $restEnd = strtotime(CarbonImmutable::now());
+        $restTotal = gmdate('H:i:s', $restEnd - $restStart);
+
         Rest::where('attendance_id', $user->id)->where('end_time', null)
-            ->update(['end_time' => CarbonImmutable::now()]);
+            ->update(['end_time' => CarbonImmutable::now(), 'total_time' => $restTotal]);
 
         return redirect('attendance');
     }

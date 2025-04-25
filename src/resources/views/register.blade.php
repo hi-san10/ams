@@ -26,14 +26,14 @@
             </div>
             <div class="form-item">
                 <p class="form-item__text">パスワード</p>
-                <input type="text" class="form-item__input" name="password">
+                <input type="password" class="form-item__input" name="password">
                 @error('password')
                     <p class="error-message">{{ $message}}</p>
                 @enderror
             </div>
             <div class="form-item">
                 <p class="form-item__text">パスワード確認</p>
-                <input type="text" class="form-item__input" name="password_confirmation">
+                <input type="password" class="form-item__input" name="password_confirmation">
                 @error('password_confirmation')
                     <p class="error-message">{{ $message}}</p>
                 @enderror

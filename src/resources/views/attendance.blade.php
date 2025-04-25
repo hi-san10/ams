@@ -10,7 +10,7 @@
         <p class="work-status">
             @if (is_null($user))
                 勤務外
-            @elseif ($end)
+            @elseif ($workEnd)
                 退勤済
             @else
                 出勤中
@@ -25,15 +25,9 @@
                 @csrf
                 <input type="submit" class="stamp" value="出勤">
             </form>
-        @elseif ($end)
+        @elseif ($workEnd)
             <p class="attendance-massage">お疲れ様でした。</p>
         @elseif (!$rest)
-            <form action="/rest/end" class="attendance__form" method="post">
-                @method('patch')
-                @csrf
-                <input type="submit" class="stamp" value="休憩戻">
-            </form>
-        @else
             <form action="/attendance/end" class="attendance__form" method="post">
                 @method('patch')
                 @csrf
@@ -42,6 +36,12 @@
             <form action="/rest/start" class="attendance_form" method="post">
                 @csrf
                 <input type="submit" class="stamp" value="休憩入">
+            </form>
+        @else
+            <form action="/rest/end" class="attendance__form" method="post">
+                @method('patch')
+                @csrf
+                <input type="submit" class="stamp" value="休憩戻">
             </form>
         @endif
     </div>

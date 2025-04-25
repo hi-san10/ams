@@ -19,7 +19,7 @@ class CreateAttendancesTable extends Migration
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
             $table->time('rest_total_time')->nullable();
-            $table->time('total_working_time')->nullable();
+            $table->integer('total_working_time')->nullable();
             $table->timestamps();
         });
     }
