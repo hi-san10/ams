@@ -10,7 +10,7 @@
         <p class="work-status">
             @if (is_null($user))
                 勤務外
-            @elseif ($workEnd)
+            @elseif (!$workEnd)
                 退勤済
             @else
                 出勤中
@@ -25,7 +25,7 @@
                 @csrf
                 <input type="submit" class="stamp" value="出勤">
             </form>
-        @elseif ($workEnd)
+        @elseif (!$workEnd)
             <p class="attendance-massage">お疲れ様でした。</p>
         @elseif (!$rest)
             <form action="/attendance/end" class="attendance__form" method="post">

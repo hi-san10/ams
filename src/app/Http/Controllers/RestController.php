@@ -12,7 +12,7 @@ class RestController extends Controller
 {
     public function start()
     {
-        $user = Attendance::where('user_id', Auth::id())->whereDate('start_time', CarbonImmutable::today())->first();
+        $user = Attendance::where('user_id', Auth::id())->whereDate('date', CarbonImmutable::today())->first();
 
         Rest::create([
             'attendance_id' => $user->id,
@@ -24,7 +24,7 @@ class RestController extends Controller
 
     public function end()
     {
-        $user = Attendance::where('user_id', Auth::id())->whereDate('start_time', CarbonImmutable::today())->first();
+        $user = Attendance::where('user_id', Auth::id())->whereDate('date', CarbonImmutable::today())->first();
 
         $lastRest = Rest::where('attendance_id', $user->id)->latest('id')->first();
 

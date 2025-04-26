@@ -6,19 +6,18 @@ use Illuminate\Http\Request;
 use App\Models\Attendance;
 use App\Models\Rest;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
     public function index()
     {
-        $carbon = CarbonImmutable::now();
+        $carbon = new CarbonImmutable;
+        $date = $carbon->toDateString();
 
-        $user = Attendance::where('user_id', Auth::id())->whereDate('start_time', $carbon)->first();
-        $rest = Rest::when($user, fn ($query) => $query->where('attendance_id', $user->id)->whereDate('start_time', $carbon)
-        ->where('end_time', null))->exists();
-        $workEnd = Attendance::where('user_id', Auth::id())->whereDate('end_time', $carbon)->exists();
+        $user = Attendance::where('user_id', Auth::id())->where('date', $date)->first();
+        $rest = Rest::when($user, fn ($query) => $query->where('attendance_id', $user->id)->where('end_time', null))->exists();
+        $workEnd = Attendance::where('user_id', Auth::id())->whereNull('end_time')->exists();
 
         return view('attendance', compact('carbon', 'user', 'workEnd', 'rest'));
     }
@@ -36,20 +35,21 @@ class AttendanceController extends Controller
 
     public function end()
     {
-        $carbon = CarbonImmutable::today();
-        $currentTime = CarbonImmutable::now();
+        $carbon = new CarbonImmutable;
+        $date = $carbon->toDateString();
+        $time = $carbon->toTimeString();
 
-        $attendance = Attendance::where('user_id', Auth::id())->whereDate('start_time', $carbon)->first();
-        $rest = Rest::where('attendance_id', $attendance->id)->whereDate('start_time', $carbon)->selectRaw('SEC_TO_TIME(SUM(TIME_TO_SEC(total_time))) as total_time')->first();
+        $attendance = Attendance::where('user_id', Auth::id())->where('date', $date)->first();
+        $rest = Rest::where('attendance_id', $attendance->id)->selectRaw('SEC_TO_TIME(SUM(TIME_TO_SEC(total_time))) as total_time')->first();
         $restTotal = strtotime($rest->total_time);
 
-        $workingTime = gmdate('H:i:s', strtotime($currentTime) - strtotime($attendance->start_time));
+        $workingTime = gmdate('H:i:s', strtotime($time) - strtotime($attendance->start_time));
         $fixesWorkingTime = strtotime($workingTime);
         $totalWorkingTime = gmdate('H:i:s', $fixesWorkingTime - $restTotal);
 
-        Attendance::where('user_id', Auth::id())->whereDate('start_time', $carbon)
+        Attendance::where('user_id', Auth::id())->whereDate('date', $carbon)
             ->update([
-                'end_time' => $carbon,
+                'end_time' => $time,
                 'rest_total_time' => $rest->total_time,
                 'total_working_time' => $totalWorkingTime
             ]);
