@@ -16,8 +16,8 @@
                 出勤中
             @endif
         </p>
-        <p class="work-day">{{ $currentTime->isoFormat('YYYY年M月D日(ddd)') }}</p>
-        <p class="current-time">{{ $currentTime->format('H:i') }}</p>
+        <p class="work-day">{{ $carbon->isoFormat('YYYY年M月D日(ddd)') }}</p>
+        <p class="current-time">{{ $carbon->format('H:i') }}</p>
     </div>
     <div class="container-inner">
         @if (!$user)
