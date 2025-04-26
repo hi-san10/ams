@@ -27,7 +27,8 @@ class AttendanceController extends Controller
     {
         Attendance::create([
             'user_id' => Auth::id(),
-            'start_time' => CarbonImmutable::today()
+            'date' => CarbonImmutable::today(),
+            'start_time' => CarbonImmutable::now()
         ]);
 
         return redirect('attendance');
