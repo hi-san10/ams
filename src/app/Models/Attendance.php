@@ -16,9 +16,4 @@ class Attendance extends Model
         'end_time',
         'total_time'
     ];
-
-    public function rests()
-    {
-        return $this->hasMany(Rest::class);
-    }
 }

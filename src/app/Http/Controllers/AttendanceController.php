@@ -16,7 +16,7 @@ class AttendanceController extends Controller
         $date = $carbon->toDateString();
 
         $user = Attendance::where('user_id', Auth::id())->where('date', $date)->first();
-        $rest = Rest::when($user, fn ($query) => $query->where('attendance_id', $user->id)->where('end_time', null))->exists();
+        $rest = Rest::when($user, fn ($query) => $query->where('attendance_id', $user->id)->whereNull('end_time'))->exists();
         $workEnd = Attendance::where('user_id', Auth::id())->whereNull('end_time')->exists();
 
         return view('attendance', compact('carbon', 'user', 'workEnd', 'rest'));

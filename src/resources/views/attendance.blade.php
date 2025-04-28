@@ -12,6 +12,8 @@
                 勤務外
             @elseif (!$workEnd)
                 退勤済
+            @elseif ($rest)
+                休憩中
             @else
                 出勤中
             @endif
@@ -21,28 +23,14 @@
     </div>
     <div class="container-inner">
         @if (!$user)
-            <form action="/attendance/start" class="attendance__form" method="post">
-                @csrf
-                <input type="submit" class="stamp" value="出勤">
-            </form>
+            <a href="/attendance/start" class="attendance_link">出勤</a>
         @elseif (!$workEnd)
             <p class="attendance-massage">お疲れ様でした。</p>
         @elseif (!$rest)
-            <form action="/attendance/end" class="attendance__form" method="post">
-                @method('patch')
-                @csrf
-                <input type="submit" class="stamp" value="退勤">
-            </form>
-            <form action="/rest/start" class="attendance_form" method="post">
-                @csrf
-                <input type="submit" class="stamp" value="休憩入">
-            </form>
+            <a href="/attendance/end" class="attendance_link">退勤</a>
+            <a href="/rest/start" class="attendance_link">休憩入</a>
         @else
-            <form action="/rest/end" class="attendance__form" method="post">
-                @method('patch')
-                @csrf
-                <input type="submit" class="stamp" value="休憩戻">
-            </form>
+            <a href="/rest/end" class="attendance_link">休憩戻</a>
         @endif
     </div>
 </div>

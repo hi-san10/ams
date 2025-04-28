@@ -37,13 +37,13 @@ Route::group(['prefix' => 'attendance'], function()
 {
     Route::get('/', [AttendanceController::class, 'index'])->middleware('auth');
 
-    Route::post('/start', [AttendanceController::class, 'start']);
+    Route::get('/start', [AttendanceController::class, 'start']);
 
-    Route::patch('/end', [AttendanceController::class, 'end']);
+    Route::get('/end', [AttendanceController::class, 'end']);
 });
 
-Route::post('/rest/start', [RestController::class, 'start']);
+Route::get('/rest/start', [RestController::class, 'start']);
 
-Route::patch('/rest/end', [RestController::class, 'end']);
+Route::get('/rest/end', [RestController::class, 'end']);
 
 
