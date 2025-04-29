@@ -16,4 +16,7 @@ class Attendance extends Model
         'end_time',
         'total_time'
     ];
+
+    protected $dates = ['date'];
+
 }

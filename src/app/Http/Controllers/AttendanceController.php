@@ -56,4 +56,23 @@ class AttendanceController extends Controller
 
         return redirect('attendance');
     }
+
+    public function list(Request $request)
+    {
+        $baseDate = $request->month;
+
+        if (is_null($baseDate))
+        {
+            $carbon = CarbonImmutable::today();
+        } else {
+            $carbon = new CarbonImmutable($baseDate);
+        }
+        $previousMonth = $carbon->subMonth(1);
+        $nextMonth = $carbon->addMonth(1);
+
+        $attendances = Attendance::where('user_id', Auth::id())->whereYear('date', $carbon)->whereMonth('date', $carbon)->get();
+
+
+        return view('attendance_list', compact('attendances', 'carbon', 'previousMonth', 'nextMonth'));
+    }
 }

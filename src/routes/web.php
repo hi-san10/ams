@@ -40,6 +40,8 @@ Route::group(['prefix' => 'attendance'], function()
     Route::get('/start', [AttendanceController::class, 'start']);
 
     Route::get('/end', [AttendanceController::class, 'end']);
+
+    Route::get('/list{month?}', [AttendanceController::class, 'list'])->name('attendance_list');
 });
 
 Route::get('/rest/start', [RestController::class, 'start']);

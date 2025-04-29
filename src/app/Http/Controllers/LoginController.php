@@ -37,7 +37,7 @@ class LoginController extends Controller
 
         Mail::to($email)->send(new CertificationMail($email));
 
-        return view('authInduction', compact('email'));
+        return view('auth_induction', compact('email'));
     }
 
     public function verification(Request $request)
@@ -60,7 +60,7 @@ class LoginController extends Controller
         $email = $request->email;
         Mail::to($email)->send(new CertificationMail($email));
 
-        return view('authInduction', compact('email'));
+        return view('auth_induction', compact('email'));
     }
 
     public function postLogin(LoginRequest $request)
@@ -78,7 +78,7 @@ class LoginController extends Controller
             return back()->with('message', 'パスワードが違います');
 
         } elseif (is_null($user->email_verified_at)) {
-            return view('authInduction', compact('email'));
+            return view('auth_induction', compact('email'));
         }
 
         $credentials = ([

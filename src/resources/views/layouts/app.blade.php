@@ -18,8 +18,8 @@
         @if (Auth::check())
         <div class="header__nav">
             <ul class="nav-list">
-                <li><a class="list-menu" href="">勤怠</a></li>
-                <li><a class="list-menu" href="">勤怠一覧</a></li>
+                <li><a class="list-menu" href="/attendance">勤怠</a></li>
+                <li><a class="list-menu" href="/attendance/list">勤怠一覧</a></li>
                 <li><a class="list-menu" href="">申請</a></li>
                 <li><a class="list-menu" href="/logout">ログアウト</a></li>
             </ul>

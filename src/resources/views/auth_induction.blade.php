@@ -1,7 +1,7 @@
 @extends('layouts/app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/authInduction.css') }}">
+<link rel="stylesheet" href="{{ asset('css/auth_induction.css') }}">
 @endsection
 
 @section('content')
