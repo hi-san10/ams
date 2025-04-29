@@ -75,4 +75,12 @@ class AttendanceController extends Controller
 
         return view('attendances.list', compact('attendances', 'carbon', 'previousMonth', 'nextMonth'));
     }
+
+    public function detail(Request $request)
+    {
+        $attendance = Attendance::with('user')->where('id', $request->id)->first();
+        $rests = Rest::where('attendance_id', $attendance->id)->get();
+
+        return view('attendances.detail', compact('attendance', 'rests'));
+    }
 }

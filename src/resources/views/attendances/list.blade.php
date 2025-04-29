@@ -1,12 +1,12 @@
 @extends('layouts/app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/attendance_list.css') }}">
+<link rel="stylesheet" href="{{ asset('css/list.css') }}">
 @endsection
 
 @section('content')
 <div class="attendance_list-container">
-    <div class="attendance_list__title">
+    <div class="attendance_list-title">
         <h1 class="title-text">勤怠一覧</h1>
     </div>
     <div class="attendance_list-date">
@@ -30,7 +30,7 @@
             <td>{{ substr($attendance->end_time, 0, 5) }}</td>
             <td>{{ substr($attendance->rest_total_time, 0, 5) }}</td>
             <td>{{ substr($attendance->total_working_time, 0, 5) }}</td>
-            <td><a href="" class="detail">詳細</a></td>
+            <td><a href="{{ route('attendance_detail', ['id' => $attendance->id]) }}" class="detail">詳細</a></td>
         </tr>
         @endforeach
     </table>

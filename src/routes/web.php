@@ -42,6 +42,8 @@ Route::group(['prefix' => 'attendance'], function()
     Route::get('/end', [AttendanceController::class, 'end']);
 
     Route::get('/list{month?}', [AttendanceController::class, 'list'])->name('attendance_list');
+
+    Route::get('/detail{id}', [AttendanceController::class, 'detail'])->name('attendance_detail');
 });
 
 Route::get('/rest/start', [RestController::class, 'start']);
