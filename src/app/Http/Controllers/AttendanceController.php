@@ -19,7 +19,7 @@ class AttendanceController extends Controller
         $rest = Rest::when($user, fn ($query) => $query->where('attendance_id', $user->id)->whereNull('end_time'))->exists();
         $workEnd = Attendance::where('user_id', Auth::id())->whereNull('end_time')->exists();
 
-        return view('attendance', compact('carbon', 'user', 'workEnd', 'rest'));
+        return view('attendances.attendance', compact('carbon', 'user', 'workEnd', 'rest'));
     }
 
     public function start()
@@ -73,6 +73,6 @@ class AttendanceController extends Controller
         $attendances = Attendance::where('user_id', Auth::id())->whereYear('date', $carbon)->whereMonth('date', $carbon)->get();
 
 
-        return view('attendance_list', compact('attendances', 'carbon', 'previousMonth', 'nextMonth'));
+        return view('attendances.list', compact('attendances', 'carbon', 'previousMonth', 'nextMonth'));
     }
 }

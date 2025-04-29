@@ -89,7 +89,7 @@ class LoginController extends Controller
         Auth::attempt($credentials);
         $request->session()->regenerate();
 
-        return redirect('attendance');
+        return redirect('attendances.attendance');
 
     }
 
@@ -99,6 +99,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('attendance');
+        return redirect('attendances.attendance');
     }
 }
