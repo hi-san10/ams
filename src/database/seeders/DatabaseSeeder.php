@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\Attendance;
+use Database\Factories\AttendanceFactory;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,7 +15,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(UsersTableSeeder::class);
+        // $this->call(UsersTableSeeder::class);
+        $this->call(AttendanceFactory::class);
         // \App\Models\User::factory(10)->create();
     }
 }
