@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class AttendanceFactory extends Factory
+class RestFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -14,12 +14,10 @@ class AttendanceFactory extends Factory
     public function definition()
     {
         return [
-            'user_id' => 1,
-            'date' => $this->faker->dateTimeBetween('-1 week', '+1 week'),
+            'attendance_id' => $this->faker->numberBetween($min = 1, $max = 50),
             'start_time' => $this->faker->time(),
             'end_time' => $this->faker->time(),
-            'rest_total_time' => $this->faker->time(),
-            'total_working_time' => $this->faker->time(),
+            'total_time' => $this->faker->time(),
         ];
     }
 }
