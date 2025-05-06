@@ -14,7 +14,7 @@ class AttendanceFactory extends Factory
     public function definition()
     {
         return [
-            'user_id' => 1,
+            'user_id' => $this->faker->numberBetween($min = 1, $max = 10),
             'date' => $this->faker->dateTimeBetween('-1 week', '+1 week'),
             'start_time' => $this->faker->time(),
             'end_time' => $this->faker->time(),

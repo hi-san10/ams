@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\RestController;
+use App\Http\Controllers\CorrectionAttendanceController;
 
 
 /*
@@ -43,11 +44,18 @@ Route::group(['prefix' => 'attendance'], function()
 
     Route::get('/list{month?}', [AttendanceController::class, 'list'])->name('attendance_list');
 
-    Route::get('/detail{id}', [AttendanceController::class, 'detail'])->name('attendance_detail');
+    Route::get('/detail{id?}', [AttendanceController::class, 'detail'])->name('attendance_detail');
+
+    Route::post('/request{id}', [AttendanceController::class, 'request'])->name('attendance_request');
 });
 
 Route::get('/rest/start', [RestController::class, 'start']);
 
 Route::get('/rest/end', [RestController::class, 'end']);
+
+Route::group(['prefix' => 'stamp_correction_request'], function()
+{
+    Route::post('/{id}', [CorrectionAttendanceController::class, 'correction'])->name('correction');
+});
 
 
