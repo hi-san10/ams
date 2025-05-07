@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Attendance;
+use App\Models\CorrectionAttendance;
+use App\Models\CorrectionRest;
 use App\Models\Rest;
+use App\Models\StampCorrectionRequest;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 
@@ -79,41 +82,19 @@ class AttendanceController extends Controller
     public function detail(Request $request)
     {
         $attendance = Attendance::with('user')->where('id', $request->id)->first();
-        $rests = Rest::where('attendance_id', $attendance->id)->get();
 
-        $rest_start = 'rest_start1';
+        $hasStampCorrectionRequest = StampCorrectionRequest::where('attendance_id', $attendance->id)->where('is_approval', false)->first();
 
-        return view('attendances.detail', compact('attendance', 'rests', 'rest_start'));
+        if (is_null($hasStampCorrectionRequest))
+        {
+            $rests = Rest::where('attendance_id', $attendance->id)->get();
+
+            return view('attendances.detail', compact('attendance', 'rests', 'hasStampCorrectionRequest'));
+        }
+
+        $correctionAttendance = CorrectionAttendance::where('stamp_correction_request_id', $hasStampCorrectionRequest->id)->first();
+        $correctionRests = CorrectionRest::where('correction_attendance_id', $correctionAttendance->id)->get();
+
+        return view('attendances.detail', compact('attendance', 'hasStampCorrectionRequest', 'correctionAttendance', 'correctionRests'));
     }
-    // attendance_appliesに保存する
-    // public function request(Request $request)
-    // {
-    //     $attendance = Attendance::with('user')->where('id', $request->id)->first();
-    //     $attendance->update(['pending' => CarbonImmutable::now()]);
-
-    //     $rests = Rest::where('attendance_id', $attendance->id)->get();
-
-    //     if (is_null($request))
-    //     {
-    //         $pending[] = [
-    //             'start' => $attendance->start_time,
-    //             'end' => $attendance->end_time,
-    //             'rest_start' => $attendance->rest_start,
-    //             'rest_end' => $attendance->rest_end
-    //         ];
-    //     }
-    //     dd($pending);
-    //     $pending[] = [
-    //         'start' => $request->start,
-    //         'end' => $request->end,
-    //         'rest_start' => $request->rest_start,
-    //         'rest_end' => $request->rest_end
-    //     ];
-    //     $request_start = $request->start;
-    //     $request_end = $request->end;
-    //     $request_restStart = $request->rest_start;
-    //     $request_restEnd = $request->rest_end;
-
-    //     return view('attendances.detail', compact('attendance', 'rests', 'request_start', 'request_end', 'request_restStart', 'request_restEnd'));
-    // }
 }

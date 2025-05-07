@@ -9,7 +9,7 @@
     <div class="detail-title">
         <h1 class="title__text">勤怠詳細</h1>
     </div>
-    @if (is_null($attendance->pending))
+    @if (is_null($hasStampCorrectionRequest))
     <!-- 詳細リンクから(未申請) -->
     <form action="{{ route('correction', ['id' => $attendance->id]) }}" method="post">
         @csrf
@@ -53,33 +53,42 @@
         <input type="submit" value="修正">
     </form>
     @else
-    <!-- 修正リンクから -->
+    <!-- 修正リンクから(修正待ち) -->
     <table>
         <tr>
-            <th>出勤・退勤</th>
-            <td><input type="text" class="attendance-time" value="{{ $request_start }}"></td>
-            <td>~</td>
-            <td><input type="text" class="attendance-time" value="{{ $request_end }}"></td>
+            <th>名前</th>
+            <td>{{ $attendance->user->name }}</td>
         </tr>
-        @if ($rests)
-        @foreach($rests as $rest)
+        <tr>
+            <th>日付</th>
+            <td>{{ $attendance->date->format('Y') }}年</td>
+            <td>{{ $attendance->date->format('m') }}月{{ $attendance->date->format('d') }}日</td>
+        </tr>
+        <tr>
+            <th>出勤・退勤</th>
+            <td><input type="text" class="attendance-time" value="{{ $correctionAttendance->start_time }}" readonly></td>
+            <td>~</td>
+            <td><input type="text" class="attendance-time" value="{{ $correctionAttendance->end_time }}" readonly></td>
+        </tr>
+        @if ($correctionRests)
+        @foreach($correctionRests as $correctionRest)
         <tr>
             <th>休憩</th>
-            <td><input type="text" class="attendance-time" value="{{ substr($request_restStart, 0, 5) }}"></td>
+            <td><input type="text" class="attendance-time" value="{{ substr($correctionRest->start_time, 0, 5) }}" readonly></td>
             <td>~</td>
-            <td><input type="text" class="attendance-time" value="{{ substr($request_restEnd, 0, 5) }}"></td>
+            <td><input type="text" class="attendance-time" value="{{ substr($correctionRest->end_time, 0, 5) }}" readonly></td>
         </tr>
         @endforeach
         @endif
         <tr>
             <th>休憩</th>
-            <td><input type="text" class="attendance-time" name="rest_start"></td>
+            <td><input type="text" class="attendance-time" name="rest_start" readonly></td>
             <td>~</td>
-            <td><input type="text" class="attendance-time" name="rest-end"></td>
+            <td><input type="text" class="attendance-time" name="rest-end" readonly></td>
         </tr>
         <tr>
             <th>備考</th>
-            <td><textarea name="remarks" id="" class="remarks"></textarea></td>
+            <td><textarea name="remarks" id="" class="remarks">{{ $hasStampCorrectionRequest->request_reason }}</textarea></td>
         </tr>
     </table>
     <p class="pending__text">*承認待ちのため修正はできません。</p>
