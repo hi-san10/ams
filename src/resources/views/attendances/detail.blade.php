@@ -29,6 +29,14 @@
                 <td>~</td>
                 <td><input type="text" class="attendance-time" name="end" value="{{ substr($attendance->end_time, 0, 5) }}"></td>
             </tr>
+            @if ($errors->any())
+            <tr>
+                <th></th>
+                <td>@error('start'){{ $message }}@enderror</td>
+                <td>~</td>
+                <td>@error('end'){{ $message }}@enderror</td>
+            </tr>
+            @endif
             @if ($rests)
             @foreach($rests as $rest)
             <tr>
@@ -37,17 +45,35 @@
                 <td>~</td>
                 <td><input type="text" class="attendance-time" name="rest_end[]" value="{{ substr($rest->end_time, 0, 5) }}"></td>
             </tr>
+            @if ($errors->any())
+            <tr>
+                <th></th>
+                <td>@error('rest_start'){{ $message }}@enderror</td>
+                <td>~</td>
+                <td>@error('rest_end'){{ $message }}@enderror</td>
+            </tr>
+            @endif
             @endforeach
             @endif
             <tr>
                 <th>休憩</th>
-                <td><input type="text" class="attendance-time" name="newRest_start"></td>
+                <td><input type="text" class="attendance-time" name="newRest_start" value="{{ old('newRest_start') }}"></td>
                 <td>~</td>
-                <td><input type="text" class="attendance-time" name="newRest_end"></td>
+                <td><input type="text" class="attendance-time" name="newRest_end" value="{{ old('newRest_end') }}"></td>
             </tr>
+            @if ($errors->any())
+            <tr>
+                <th></th>
+                <td>@error('newRest_start'){{ $message }}@enderror</td>
+                <td>~</td>
+                <td>@error('newRest_end'){{ $message }}@enderror</td>
+            </tr>
+            @endif
             <tr>
                 <th>備考</th>
-                <td><textarea name="remarks" id="" class="remarks"></textarea></td>
+                <td>
+                    <textarea name="remarks" id="" class="remarks">@error('remarks'){{$message}}@enderror</textarea>
+                </td>
             </tr>
         </table>
         <input type="submit" value="修正">
@@ -82,13 +108,13 @@
         @endif
         <tr>
             <th>休憩</th>
-            <td><input type="text" class="attendance-time" name="rest_start" readonly></td>
+            <td><input type="text" class="attendance-time" readonly></td>
             <td>~</td>
-            <td><input type="text" class="attendance-time" name="rest-end" readonly></td>
+            <td><input type="text" class="attendance-time" readonly></td>
         </tr>
         <tr>
             <th>備考</th>
-            <td><textarea name="remarks" id="" class="remarks">{{ $hasStampCorrectionRequest->request_reason }}</textarea></td>
+            <td><textarea id="" class="remarks">{{ $hasStampCorrectionRequest->request_reason }}</textarea></td>
         </tr>
     </table>
     <p class="pending__text">*承認待ちのため修正はできません。</p>

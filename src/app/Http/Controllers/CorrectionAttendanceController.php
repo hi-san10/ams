@@ -8,10 +8,11 @@ use App\Models\CorrectionAttendance;
 use App\Models\CorrectionRest;
 use App\Models\StampCorrectionRequest;
 use Carbon\CarbonImmutable;
+use App\Http\Requests\CorrectionRequest;
 
 class CorrectionAttendanceController extends Controller
 {
-    public function correction(Request $request)
+    public function correction(CorrectionRequest $request)
     {
         $Attendance = Attendance::where('id', $request->id)->first();
 
