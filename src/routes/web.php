@@ -56,6 +56,9 @@ Route::get('/rest/end', [RestController::class, 'end']);
 Route::group(['prefix' => 'stamp_correction_request'], function()
 {
     Route::post('/{id}', [CorrectionAttendanceController::class, 'correction'])->name('correction');
+
+    Route::get('/list', [CorrectionAttendanceController::class, 'list']);
 });
+
 
 

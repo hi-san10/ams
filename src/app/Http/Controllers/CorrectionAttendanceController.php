@@ -9,6 +9,7 @@ use App\Models\CorrectionRest;
 use App\Models\StampCorrectionRequest;
 use Carbon\CarbonImmutable;
 use App\Http\Requests\CorrectionRequest;
+use Illuminate\Support\Facades\Auth;
 
 class CorrectionAttendanceController extends Controller
 {
@@ -17,6 +18,7 @@ class CorrectionAttendanceController extends Controller
         $Attendance = Attendance::where('id', $request->id)->first();
 
         $correction = StampCorrectionRequest::create([
+            'user_id' => Auth::id(),
             'attendance_id' => $Attendance->id,
             'target_date' => $Attendance->date,
             'request_date' => CarbonImmutable::today(),
@@ -60,5 +62,14 @@ class CorrectionAttendanceController extends Controller
         }
 
         return redirect()->route('attendance_list');
+    }
+
+    public function list()
+    {
+        $attendances = Attendance::with('user')->where('user_id', Auth::id())->get();
+
+        // stamp_correction_requestsにuser_idを追加
+
+        return view('request_list', compact('attendances'));
     }
 }

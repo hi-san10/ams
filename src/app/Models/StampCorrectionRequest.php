@@ -10,6 +10,7 @@ class StampCorrectionRequest extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'attendance_id',
         'is_approval',
         'target_date',
