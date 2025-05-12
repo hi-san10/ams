@@ -25,32 +25,32 @@
             </tr>
             <tr>
                 <th>出勤・退勤</th>
-                <td><input type="text" class="attendance-time" name="start" value="{{ substr($attendance->start_time, 0, 5) }}"></td>
+                <td><input type="text" class="attendance-time" name="start" value="{{ old('start', substr($attendance->start_time, 0, 5)) }}"></td>
                 <td>~</td>
-                <td><input type="text" class="attendance-time" name="end" value="{{ substr($attendance->end_time, 0, 5) }}"></td>
+                <td><input type="text" class="attendance-time" name="end" value="{{ old('end', substr($attendance->end_time, 0, 5)) }}"></td>
             </tr>
-            @if ($errors->any())
+            @if ($errors->has('start') or $errors->has('end'))
             <tr>
                 <th></th>
-                <td>@error('start'){{ $message }}@enderror</td>
-                <td>~</td>
-                <td>@error('end'){{ $message }}@enderror</td>
+                <td>@error('start') {{ $message }} @enderror</td>
+                <td></td>
+                <td>@error('end') {{ $message }} @enderror</td>
             </tr>
             @endif
             @if ($rests)
-            @foreach($rests as $rest)
+            @foreach($rests as $index => $rest)
             <tr>
                 <th>休憩</th>
-                <td><input type="text" class="attendance-time" name="rest_start[]" value="{{ substr($rest->start_time, 0, 5) }}"></td>
+                <td><input type="text" class="attendance-time" name="rest_start[{{ $index }}]" value="{{ old('rest_start.'.$index, substr($rest->start_time, 0, 5)) }}"></td>
                 <td>~</td>
-                <td><input type="text" class="attendance-time" name="rest_end[]" value="{{ substr($rest->end_time, 0, 5) }}"></td>
+                <td><input type="text" class="attendance-time" name="rest_end[{{ $index }}]" value="{{ old('rest_end.'.$index, substr($rest->end_time, 0, 5)) }}"></td>
             </tr>
-            @if ($errors->any())
+            @if ($errors->has('rest_start.*') or $errors->has('rest_end.*'))
             <tr>
                 <th></th>
-                <td>@error('rest_start'){{ $message }}@enderror</td>
-                <td>~</td>
-                <td>@error('rest_end'){{ $message }}@enderror</td>
+                <td>@error('rest_start.'.$index) {{ $message }} @enderror</td>
+                <td></td>
+                <td>@error('rest_end.'.$index) {{ $message }} @enderror</td>
             </tr>
             @endif
             @endforeach
@@ -61,20 +61,26 @@
                 <td>~</td>
                 <td><input type="text" class="attendance-time" name="newRest_end" value="{{ old('newRest_end') }}"></td>
             </tr>
-            @if ($errors->any())
+            @if ($errors->has('newRest_start') or $errors->has('newRest_end'))
             <tr>
                 <th></th>
-                <td>@error('newRest_start'){{ $message }}@enderror</td>
-                <td>~</td>
-                <td>@error('newRest_end'){{ $message }}@enderror</td>
+                <td>@error('newRest_start') {{ $message }} @enderror</td>
+                <td></td>
+                <td>@error('newRest_end') {{ $message }} @enderror</td>
             </tr>
             @endif
             <tr>
                 <th>備考</th>
                 <td>
-                    <textarea name="remarks" id="" class="remarks">@error('remarks'){{$message}}@enderror</textarea>
+                    <textarea name="remarks" id="" class="remarks"></textarea>
                 </td>
             </tr>
+            @error('remarks')
+            <tr>
+                <th></th>
+                <td>{{ $message }}</td>
+            </tr>
+            @enderror
         </table>
         <input type="submit" value="修正">
     </form>

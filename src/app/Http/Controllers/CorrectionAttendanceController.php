@@ -52,6 +52,7 @@ class CorrectionAttendanceController extends Controller
             }
         }
 
+        // newRest_startがあってendがない場合return backさせる
         if ($request->newRest_start)
         {
             CorrectionRest::create([
