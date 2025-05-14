@@ -8,7 +8,10 @@
     <div class="request_list-title">
         <h1 class="title__text">申請</h1>
     </div>
-    <div class="status_bar"></div>
+    <div class="status_bar">
+        <a href="{{ route('request_list') }}">承認待ち</a>
+        <a href="{{ route('request_list') }}?page=approved">承認済み</a>
+    </div>
     <table>
         <tr>
             <th>状態</th>
@@ -31,7 +34,7 @@
             <th>{{ $correction_request->target_date->format('Y/m/d') }}</th>
             <th>{{ $correction_request->request_reason }}</th>
             <th>{{ $correction_request->request_date->format('Y/m/d') }}</th>
-            <th><a href="">詳細</a></th>
+            <th><a href="{{ route('attendance_detail', ['id' => $correction_request->attendance_id]) }}">詳細</a></th>
         </tr>
         @endforeach
     </table>

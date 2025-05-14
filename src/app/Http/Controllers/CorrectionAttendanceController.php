@@ -64,13 +64,16 @@ class CorrectionAttendanceController extends Controller
         return redirect()->route('attendance_list');
     }
 
-    public function list()
+    public function list(Request $request)
     {
-        $correction_requests = StampCorrectionRequest::with('user', 'attendance')->where([['user_id', Auth::id()], ['is_approval', false]])->get();
-        // dd($correction_attendance);
-        // $attendances = Attendance::with('user')->where('user_id', Auth::id())->get();
+        $prm = $request->page;
 
-        // stamp_correction_requestsにuser_idを追加
+        if (is_null($prm))
+        {
+            $correction_requests = StampCorrectionRequest::with('user', 'attendance')->where([['user_id', Auth::id()], ['is_approval', false]])->get();
+        }elseif ($prm == 'approved') {
+            $correction_requests = StampCorrectionRequest::with('user', 'attendance')->where([['user_id', Auth::id()], ['is_approval', true]])->get();
+        }
 
         return view('request_list', compact('correction_requests'));
     }

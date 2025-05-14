@@ -81,22 +81,20 @@ class AttendanceController extends Controller
 
     public function detail(Request $request)
     {
-        $i = 0;
         $attendance = Attendance::with('user')->where('id', $request->id)->first();
 
-        $hasStampCorrectionRequest = StampCorrectionRequest::where('attendance_id', $attendance->id)->where('is_approval', false)->first();
+        $hasStampCorrectionRequest = StampCorrectionRequest::where([['attendance_id', $attendance->id], ['is_approval', false]])->first();
 
         if (is_null($hasStampCorrectionRequest))
         {
             $rests = Rest::where('attendance_id', $attendance->id)->get();
-            // dd($rests);
 
-            return view('attendances.detail', compact('attendance', 'rests', 'hasStampCorrectionRequest', 'i'));
+            return view('attendances.detail', compact('attendance', 'rests', 'hasStampCorrectionRequest'));
         }
 
         $correctionAttendance = CorrectionAttendance::where('stamp_correction_request_id', $hasStampCorrectionRequest->id)->first();
         $correctionRests = CorrectionRest::where('correction_attendance_id', $correctionAttendance->id)->get();
 
-        return view('attendances.detail', compact('attendance', 'hasStampCorrectionRequest', 'correctionAttendance', 'correctionRests', 'i'));
+        return view('attendances.detail', compact('attendance', 'hasStampCorrectionRequest', 'correctionAttendance', 'correctionRests'));
     }
 }
