@@ -17,4 +17,16 @@ class StampCorrectionRequest extends Model
         'request_date',
         'request_reason'
     ];
+
+    protected $dates = ['target_date', 'request_date'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function attendance()
+    {
+        return $this->belongsTo(Attendance::class);
+    }
 }

@@ -18,14 +18,20 @@
             <th>申請日時</th>
             <th>詳細</th>
         </tr>
-        @foreach($attendances as $attendance)
+        @foreach($correction_requests as $correction_request)
         <tr>
-            <th></th>
-            <th>{{ $attendance->user->name }}</th>
-            <th>{{ $attendance->date->format('Y/m/d') }}</th>
-            <th></th>
-            <th></th>
-            <th></th>
+            <th>
+                @if ($correction_request->is_approval == false)
+                承認待ち
+                @else
+                承認済み
+                @endif
+            </th>
+            <th>{{ $correction_request->user->name }}</th>
+            <th>{{ $correction_request->target_date->format('Y/m/d') }}</th>
+            <th>{{ $correction_request->request_reason }}</th>
+            <th>{{ $correction_request->request_date->format('Y/m/d') }}</th>
+            <th><a href="">詳細</a></th>
         </tr>
         @endforeach
     </table>

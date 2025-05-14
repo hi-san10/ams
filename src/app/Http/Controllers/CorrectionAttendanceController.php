@@ -52,7 +52,6 @@ class CorrectionAttendanceController extends Controller
             }
         }
 
-        // newRest_startがあってendがない場合return backさせる
         if ($request->newRest_start)
         {
             CorrectionRest::create([
@@ -67,10 +66,12 @@ class CorrectionAttendanceController extends Controller
 
     public function list()
     {
-        $attendances = Attendance::with('user')->where('user_id', Auth::id())->get();
+        $correction_requests = StampCorrectionRequest::with('user', 'attendance')->where([['user_id', Auth::id()], ['is_approval', false]])->get();
+        // dd($correction_attendance);
+        // $attendances = Attendance::with('user')->where('user_id', Auth::id())->get();
 
         // stamp_correction_requestsにuser_idを追加
 
-        return view('request_list', compact('attendances'));
+        return view('request_list', compact('correction_requests'));
     }
 }

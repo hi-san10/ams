@@ -72,7 +72,7 @@
             <tr>
                 <th>備考</th>
                 <td>
-                    <textarea name="remarks" id="" class="remarks"></textarea>
+                    <textarea name="remarks" id="" class="remarks" value="">{{ old('remarks') }}</textarea>
                 </td>
             </tr>
             @error('remarks')
@@ -98,9 +98,9 @@
         </tr>
         <tr>
             <th>出勤・退勤</th>
-            <td><input type="text" class="attendance-time" value="{{ $correctionAttendance->start_time }}" readonly></td>
+            <td><input type="text" class="attendance-time" value="{{ substr($correctionAttendance->start_time, 0, 5) }}" readonly></td>
             <td>~</td>
-            <td><input type="text" class="attendance-time" value="{{ $correctionAttendance->end_time }}" readonly></td>
+            <td><input type="text" class="attendance-time" value="{{ substr($correctionAttendance->end_time, 0, 5) }}" readonly></td>
         </tr>
         @if ($correctionRests)
         @foreach($correctionRests as $correctionRest)
