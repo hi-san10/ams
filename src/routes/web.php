@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AttendanceController;
@@ -55,6 +56,11 @@ Route::group(['prefix' => 'stamp_correction_request'], function()
     Route::post('/{id}', [CorrectionAttendanceController::class, 'correction'])->name('correction');
 
     Route::get('/list', [CorrectionAttendanceController::class, 'list'])->name('request_list');
+});
+
+Route::group(['prefix' => 'admin'], function()
+{
+    Route::post('/login', [AdminController::class, 'login']);
 });
 
 

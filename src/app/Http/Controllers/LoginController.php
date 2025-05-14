@@ -20,9 +20,11 @@ class LoginController extends Controller
         return view('select');
     }
 
-    public function getLogin()
+    public function getLogin(Request $request)
     {
-        return view('login');
+        $prm = $request->page;
+
+        return view('login', compact('prm'));
     }
 
     public function register()
