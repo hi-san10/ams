@@ -17,10 +17,7 @@ use App\Http\Controllers\CorrectionAttendanceController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    return view('login');
-});
+Route::get('/', [LoginController::class, 'select']);
 
 Route::get('/login', [LoginController::class, 'getLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'postLogin']);

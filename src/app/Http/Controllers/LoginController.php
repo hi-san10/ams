@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
+    public function select()
+    {
+        return view('select');
+    }
+
     public function getLogin()
     {
         return view('login');
@@ -99,6 +104,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('attendance');
+        return view('select');
     }
 }
