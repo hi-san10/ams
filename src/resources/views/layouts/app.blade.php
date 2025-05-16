@@ -24,6 +24,15 @@
                 <li><a class="list-menu" href="/logout">ログアウト</a></li>
             </ul>
         </div>
+        @elseif (Auth::guard('admins'))
+        <div class="header__nav">
+            <ul class="nav-list">
+                <li><a class="list-menu" href="">勤怠一覧</a></li>
+                <li><a class="list-menu" href="">スタッフ一覧</a></li>
+                <li><a class="list-menu" href="">申請一覧</a></li>
+                <li><a class="list-menu" href="">ログアウト</a></li>
+            </ul>
+        </div>
         @endif
     </header>
     @yield('content')

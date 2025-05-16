@@ -11,7 +11,7 @@
     <p class="session-message">{{ session('message') }}</p>
     @endif
     <div class="login-inner">
-        <form action="admin/login" method="post" class="login__form">
+        <form action="/admin/login" method="post" class="login__form">
             @csrf
             <div class="form-item">
                 <p class="form-item__text">メールアドレス</p>
