@@ -60,7 +60,7 @@ Route::group(['prefix' => 'stamp_correction_request'], function()
 
 Route::group(['prefix' => 'admin'], function()
 {
-    Route::post('/login', [AdminController::class, 'login']);
+    Route::get('/login', [AdminController::class, 'getLogin']);
 });
 
 
