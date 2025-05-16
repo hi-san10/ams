@@ -31,6 +31,12 @@ class AdminController extends Controller
         Auth::guard('admins')->attempt($credentials);
         $request->session()->regenerate();
 
+        return redirect('/admin/attendance/list');
+    }
+
+    public function list()
+    {
         return view('admins.attendance_list');
     }
+
 }

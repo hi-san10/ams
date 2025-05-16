@@ -63,6 +63,9 @@ Route::group(['prefix' => 'admin'], function()
     Route::get('/login', [AdminController::class, 'getLogin']);
 
     Route::post('/login', [AdminController::class, 'postLogin']);
+
+    Route::get('/attendance/list', [AdminController::class, 'list']);
+
 });
 
 
