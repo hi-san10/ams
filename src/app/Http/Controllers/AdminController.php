@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdminUser;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Attendance;
 
 class AdminController extends Controller
 {
@@ -34,9 +36,22 @@ class AdminController extends Controller
         return redirect('/admin/attendance/list');
     }
 
-    public function list()
+    public function list(Request $request)
     {
-        return view('admins.attendance_list');
+        $baseDate = $request->day;
+
+        if (is_null($baseDate)) {
+            $carbon = CarbonImmutable::today();
+        } else {
+            $carbon = new CarbonImmutable($baseDate);
+        }
+
+        $previousDay = new CarbonImmutable($carbon->subDay(1));
+        $nextDay = new CarbonImmutable($carbon->addDay(1));
+
+        $attendances = Attendance::with('user')->whereDate('date', $carbon)->get();
+
+        return view('admins.attendance_list', compact('carbon', 'attendances', 'previousDay', 'nextDay'));
     }
 
 }

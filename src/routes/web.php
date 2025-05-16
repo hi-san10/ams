@@ -64,7 +64,7 @@ Route::group(['prefix' => 'admin'], function()
 
     Route::post('/login', [AdminController::class, 'postLogin']);
 
-    Route::get('/attendance/list', [AdminController::class, 'list']);
+    Route::get('/attendance/list{day?}', [AdminController::class, 'list'])->name('admin_attendance_list');
 
 });
 
