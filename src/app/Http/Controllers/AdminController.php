@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
 use App\Http\Requests\LoginRequest;
+use App\Models\Rest;
+use Carbon\CarbonInterval;
 
 class AdminController extends Controller
 {
@@ -50,9 +52,27 @@ class AdminController extends Controller
         $previousDay = new CarbonImmutable($carbon->subDay(1));
         $nextDay = new CarbonImmutable($carbon->addDay(1));
 
-        $attendances = Attendance::with('user')->whereDate('date', $carbon)->get();
+        $attendances = Attendance::with('user', 'rests')->whereDate('date', $carbon)->get();
+        foreach ($attendances as $index => $attendance)
+        {
+            $start = new CarbonImmutable($attendance->start_time);
+            $end = new CarbonImmutable($attendance->end_time);
+            $workingTime = $start->diffInSeconds($end);
+
+            $rests = $attendance->rests;
+            $number = 0;
+            foreach ($rests as $rest)
+            {
+                $restStart = new CarbonImmutable($rest->start_time);
+                $restEnd = new CarbonImmutable($rest->end_time);
+                $diffRest = $restStart->diffInSeconds($restEnd);
+                $number = $number + $diffRest;
+            }
+
+            $attendance->totalRest = gmdate('H:i:s', $number);
+            $attendance->totalWork = gmdate('H:i:s', $workingTime - $number);
+        }
 
         return view('admins.attendance_list', compact('carbon', 'attendances', 'previousDay', 'nextDay'));
     }
-
 }
