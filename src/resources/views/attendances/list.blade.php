@@ -28,8 +28,8 @@
             <td>{{ $attendance->date->isoFormat('MM/D(ddd)') }}</td>
             <td>{{ substr($attendance->start_time, 0, 5) }}</td>
             <td>{{ substr($attendance->end_time, 0, 5) }}</td>
-            <td>{{ substr($attendance->rest_total_time, 0, 5) }}</td>
-            <td>{{ substr($attendance->total_working_time, 0, 5) }}</td>
+            <td>{{ substr($attendance->totalRest, 0, 5) }}</td>
+            <td>{{ substr($attendance->totalWork, 0, 5) }}</td>
             <td><a href="{{ route('attendance_detail', ['id' => $attendance->id]) }}" class="detail">詳細</a></td>
         </tr>
         @endforeach
