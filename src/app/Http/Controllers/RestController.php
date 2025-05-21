@@ -12,11 +12,13 @@ class RestController extends Controller
 {
     public function start()
     {
-        $user = Attendance::where('user_id', Auth::id())->whereDate('date', CarbonImmutable::today())->first();
+        $carbon = new CarbonImmutable;
+
+        $user = Attendance::where('user_id', Auth::id())->whereDate('date', $carbon)->first();
 
         Rest::create([
             'attendance_id' => $user->id,
-            'start_time' => CarbonImmutable::now()
+            'start_time' => $carbon
         ]);
 
         return redirect('attendance');
@@ -24,16 +26,12 @@ class RestController extends Controller
 
     public function end()
     {
-        $user = Attendance::where('user_id', Auth::id())->whereDate('date', CarbonImmutable::today())->first();
+        $carbon = new CarbonImmutable;
 
-        $lastRest = Rest::where('attendance_id', $user->id)->latest('id')->first();
+        $user = Attendance::where('user_id', Auth::id())->whereDate('date', $carbon)->first();
 
-        $restStart = strtotime($lastRest->start_time);
-        $restEnd = strtotime(CarbonImmutable::now());
-        $restTotal = gmdate('H:i:s', $restEnd - $restStart);
-
-        Rest::where('attendance_id', $user->id)->where('end_time', null)
-            ->update(['end_time' => CarbonImmutable::now(), 'total_time' => $restTotal]);
+        Rest::where([['attendance_id', $user->id], ['end_time', null]])
+            ->update(['end_time' => $carbon]);
 
         return redirect('attendance');
     }

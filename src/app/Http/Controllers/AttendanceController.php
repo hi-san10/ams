@@ -27,10 +27,12 @@ class AttendanceController extends Controller
 
     public function start()
     {
+        $carbon = new CarbonImmutable;
+
         Attendance::create([
             'user_id' => Auth::id(),
-            'date' => CarbonImmutable::today(),
-            'start_time' => CarbonImmutable::now()
+            'date' => $carbon,
+            'start_time' => $carbon
         ]);
 
         return redirect('attendance');
@@ -39,23 +41,9 @@ class AttendanceController extends Controller
     public function end()
     {
         $carbon = new CarbonImmutable;
-        $date = $carbon->toDateString();
-        $time = $carbon->toTimeString();
-
-        $attendance = Attendance::where('user_id', Auth::id())->where('date', $date)->first();
-        $rest = Rest::where('attendance_id', $attendance->id)->selectRaw('SEC_TO_TIME(SUM(TIME_TO_SEC(total_time))) as total_time')->first();
-        $restTotal = strtotime($rest->total_time);
-
-        $workingTime = gmdate('H:i:s', strtotime($time) - strtotime($attendance->start_time));
-        $fixesWorkingTime = strtotime($workingTime);
-        $totalWorkingTime = gmdate('H:i:s', $fixesWorkingTime - $restTotal);
 
         Attendance::where('user_id', Auth::id())->whereDate('date', $carbon)
-            ->update([
-                'end_time' => $time,
-                'rest_total_time' => $rest->total_time,
-                'total_working_time' => $totalWorkingTime
-            ]);
+            ->update(['end_time' => $carbon]);
 
         return redirect('attendance');
     }
