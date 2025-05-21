@@ -53,7 +53,7 @@ class AdminController extends Controller
         $nextDay = new CarbonImmutable($carbon->addDay(1));
 
         $attendances = Attendance::with('user', 'rests')->whereDate('date', $carbon)->get();
-        foreach ($attendances as $index => $attendance)
+        foreach ($attendances as $attendance)
         {
             $start = new CarbonImmutable($attendance->start_time);
             $end = new CarbonImmutable($attendance->end_time);
@@ -67,10 +67,13 @@ class AdminController extends Controller
                 $restEnd = new CarbonImmutable($rest->end_time);
                 $diffRest = $restStart->diffInSeconds($restEnd);
                 $number = $number + $diffRest;
+
+                $attendance->is_rest = $rest->end_time;
             }
 
             $attendance->totalRest = gmdate('H:i:s', $number);
             $attendance->totalWork = gmdate('H:i:s', $workingTime - $number);
+
         }
 
         return view('admins.attendance_list', compact('carbon', 'attendances', 'previousDay', 'nextDay'));

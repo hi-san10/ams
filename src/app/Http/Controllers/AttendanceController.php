@@ -61,7 +61,8 @@ class AttendanceController extends Controller
         $previousMonth = $carbon->subMonth(1);
         $nextMonth = $carbon->addMonth(1);
 
-        $attendances = Attendance::with('rests')->where('user_id', Auth::id())->whereYear('date', $carbon)->whereMonth('date', $carbon)->get();
+        $attendances = Attendance::with('rests')->where('user_id', Auth::id())->whereYear('date', $carbon)->whereMonth('date', $carbon)
+            ->orderBy('date', 'asc')->get();
         foreach ($attendances as $index => $attendance) {
             $start = new CarbonImmutable($attendance->start_time);
             $end = new CarbonImmutable($attendance->end_time);
