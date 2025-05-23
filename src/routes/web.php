@@ -40,11 +40,11 @@ Route::group(['prefix' => 'attendance'], function()
 
     Route::get('/end', [AttendanceController::class, 'end']);
 
-    Route::get('/list{month?}', [AttendanceController::class, 'list'])->name('attendance_list');
+    Route::get('/list/{month?}', [AttendanceController::class, 'list'])->name('attendance_list');
 
-    Route::get('/detail{id?}', [AttendanceController::class, 'detail'])->name('attendance_detail');
+    Route::get('/detail/{id?}', [AttendanceController::class, 'detail'])->name('attendance_detail');
 
-    Route::post('/request{id}', [AttendanceController::class, 'request'])->name('attendance_request');
+    Route::post('/request/{id}', [AttendanceController::class, 'request'])->name('attendance_request');
 });
 
 Route::get('/rest/start', [RestController::class, 'start']);
@@ -64,8 +64,11 @@ Route::group(['prefix' => 'admin'], function()
 
     Route::post('/login', [AdminController::class, 'postLogin']);
 
-    Route::get('/attendance/list{day?}', [AdminController::class, 'list'])->name('admin_attendance_list');
+    Route::get('/attendance/list/{day?}', [AdminController::class, 'list'])->name('admin_attendance_list');
 
+    Route::get('/staff/list', [AdminController::class, 'staff_list']);
+
+    Route::get('/attendance/staff/{id}/{month?}', [AdminController::class, 'staff_attendance_list'])->name('staff_attendance_list');
 });
 
 

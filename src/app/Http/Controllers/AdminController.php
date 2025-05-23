@@ -9,8 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
 use App\Http\Requests\LoginRequest;
-use App\Models\Rest;
-use Carbon\CarbonInterval;
+use App\Models\User;
 
 class AdminController extends Controller
 {
@@ -77,5 +76,48 @@ class AdminController extends Controller
         }
 
         return view('admins.attendance_list', compact('carbon', 'attendances', 'previousDay', 'nextDay'));
+    }
+
+    public function staff_list()
+    {
+        $users = User::select('id', 'name', 'email')->get();
+
+        return view('admins.staff_list', compact('users'));
+    }
+
+    public function staff_attendance_list(Request $request)
+    {
+        $baseDate = $request->month;
+        $user = User::where('id', $request->id)->select('id', 'name')->first();
+
+        if (is_null($baseDate)) {
+            $carbon = CarbonImmutable::today();
+        } else {
+            $carbon = new CarbonImmutable($baseDate);
+        }
+        $previousMonth = $carbon->subMonth(1);
+        $nextMonth = $carbon->addMonth(1);
+
+        $attendances = Attendance::with('rests')->where('user_id', $user->id)->whereYear('date', $carbon)->whereMonth('date', $carbon)
+            ->orderBy('date', 'asc')->get();
+        foreach ($attendances as $attendance) {
+            $start = new CarbonImmutable($attendance->start_time);
+            $end = new CarbonImmutable($attendance->end_time);
+            $workingTime = $start->diffInSeconds($end);
+
+            $rests = $attendance->rests;
+            $number = 0;
+            foreach ($rests as $rest) {
+                $restStart = new CarbonImmutable($rest->start_time);
+                $restEnd = new CarbonImmutable($rest->end_time);
+                $diffRest = $restStart->diffInSeconds($restEnd);
+                $number = $number + $diffRest;
+            }
+
+            $attendance->totalRest = gmdate('H:i:s', $number);
+            $attendance->totalWork = gmdate('H:i:s', $workingTime - $number);
+        }
+
+        return view('admins.staff_attendance_list', compact('attendances', 'carbon', 'previousMonth', 'nextMonth', 'user'));
     }
 }
