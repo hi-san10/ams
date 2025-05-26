@@ -88,18 +88,23 @@ class AttendanceController extends Controller
     {
         $attendance = Attendance::with('user')->where('id', $request->id)->first();
 
-        $hasStampCorrectionRequest = StampCorrectionRequest::where([['attendance_id', $attendance->id], ['is_approval', false]])->first();
+        $hasStampCorrectionRequest = StampCorrectionRequest::where('attendance_id', $attendance->id)->first();
+        $is_approval = 0;
+        if ($hasStampCorrectionRequest)
+        {
+            $is_approval = $hasStampCorrectionRequest->is_approval;
+        }
 
-        if (is_null($hasStampCorrectionRequest))
+        if (is_null($hasStampCorrectionRequest) or $hasStampCorrectionRequest->is_approval)
         {
             $rests = Rest::where('attendance_id', $attendance->id)->get();
 
-            return view('attendances.detail', compact('attendance', 'rests', 'hasStampCorrectionRequest'));
+            return view('attendances.detail', compact('attendance', 'rests', 'hasStampCorrectionRequest', 'is_approval'));
         }
 
         $correctionAttendance = CorrectionAttendance::where('stamp_correction_request_id', $hasStampCorrectionRequest->id)->first();
         $correctionRests = CorrectionRest::where('correction_attendance_id', $correctionAttendance->id)->get();
 
-        return view('attendances.detail', compact('attendance', 'hasStampCorrectionRequest', 'correctionAttendance', 'correctionRests'));
+        return view('attendances.detail', compact('attendance', 'hasStampCorrectionRequest', 'correctionAttendance', 'correctionRests', 'is_approval'));
     }
 }

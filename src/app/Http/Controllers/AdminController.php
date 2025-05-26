@@ -7,9 +7,14 @@ use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Attendance;
-use App\Http\Requests\LoginRequest;
 use App\Models\User;
+use App\Models\Attendance;
+use App\Models\Rest;
+use App\Models\StampCorrectionRequest;
+use App\Models\CorrectionAttendance;
+use App\Models\CorrectionRest;
+use App\Http\Requests\LoginRequest;
+use PhpParser\Node\Stmt\Foreach_;
 
 class AdminController extends Controller
 {
@@ -119,5 +124,37 @@ class AdminController extends Controller
         }
 
         return view('admins.staff_attendance_list', compact('attendances', 'carbon', 'previousMonth', 'nextMonth', 'user'));
+    }
+
+    public function approval_detail(Request $request)
+    {
+        $request_id = $request->attendance_correct_request;
+        $correction = StampCorrectionRequest::with('user')->where('id', $request_id)->first();
+        $attendance = CorrectionAttendance::with('correction_rests')->where('stamp_correction_request_id', $request_id)->first();
+        $correctionRests = CorrectionRest::where('correction_attendance_id', $attendance->id)->get();
+
+        return view('admins.approve', compact('correction', 'attendance', 'correctionRests'));
+    }
+
+    public function approve(Request $request)
+    {
+        $stamp_correction_request = StampCorrectionRequest::where('id', $request->id)->first();
+        $stamp_correction_request->update(['is_approval' => true]);
+
+        $attendance = Attendance::with('rests')->where('id', $stamp_correction_request->attendance_id)->first();
+
+        $rests = $attendance->rests;
+        foreach($rests as $rest)
+        {
+            Rest::find($rest->id)->delete();
+        }
+
+        $correctionRests = $attendance->rests;
+        foreach($correctionRests as $rest)
+        {
+            Rest::create(['attendance_id' => $attendance->id, 'start_time' => $rest->start_time, 'end_time' => $rest->end_time]);
+        }
+
+        return redirect()->route('approval_detail', ['attendance_correct_request' => $request->id]);
     }
 }

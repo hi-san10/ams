@@ -9,8 +9,8 @@
     <div class="detail-title">
         <h1 class="title__text">勤怠詳細</h1>
     </div>
-    @if (is_null($hasStampCorrectionRequest))
-    <!-- 詳細リンクから(未申請) -->
+    @if (is_null($hasStampCorrectionRequest) or $is_approval)
+    <!-- 詳細リンクから(未申請 or 修正承認済み) -->
     <form action="{{ route('correction', ['id' => $attendance->id]) }}" method="post">
         @csrf
         <table>
@@ -72,7 +72,13 @@
             <tr>
                 <th>備考</th>
                 <td>
-                    <textarea name="remarks" id="" class="remarks" value="">{{ old('remarks') }}</textarea>
+                    <textarea name="remarks" id="" class="remarks" value="">
+                        @if (is_null($hasStampCorrectionRequest))
+                            {{ old('remarks') }}
+                        @elseif ($is_approval)
+                            {{ $hasStampCorrectionRequest->request_reason }}
+                        @endif
+                    </textarea>
                 </td>
             </tr>
             @error('remarks')
@@ -82,10 +88,14 @@
             </tr>
             @enderror
         </table>
+        @if (is_null($hasStampCorrectionRequest))
         <input type="submit" value="修正">
+        @elseif ($is_approval)
+        <p>修正承認済み</p>
+        @endif
     </form>
-    @else
-    <!-- 修正リンクから(修正待ち) -->
+    @elseif (empty($hasStampCorrectionRequest->is_approval))
+    <!-- 修正リンクから(承認待ち) -->
     <table>
         <tr>
             <th>名前</th>
@@ -123,7 +133,7 @@
             <td><textarea id="" class="remarks">{{ $hasStampCorrectionRequest->request_reason }}</textarea></td>
         </tr>
     </table>
-    <p class="pending__text">*承認待ちのため修正はできません。</p>
+    <p class="pending__text">*承認待ちのため修正はできません</p>
     @endif
 </div>
 @endsection

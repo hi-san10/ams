@@ -15,4 +15,9 @@ class CorrectionAttendance extends Model
         'start_time',
         'end_time',
     ];
+
+    public function correction_rests()
+    {
+        return $this->hasMany(CorrectionRest::class);
+    }
 }

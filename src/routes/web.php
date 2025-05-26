@@ -69,6 +69,10 @@ Route::group(['prefix' => 'admin'], function()
     Route::get('/staff/list', [AdminController::class, 'staff_list']);
 
     Route::get('/attendance/staff/{id}/{month?}', [AdminController::class, 'staff_attendance_list'])->name('staff_attendance_list');
+
+    Route::get('/stamp_correction_request/approve/{attendance_correct_request}', [AdminController::class, 'approval_detail'])->name('approval_detail');
+
+    Route::post('/approve/{id?}', [AdminController::class, 'approve'])->name('approve');
 });
 
 
