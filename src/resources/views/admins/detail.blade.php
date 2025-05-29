@@ -9,13 +9,9 @@
     <div class="detail-title">
         <h1 class="title__text">勤怠詳細</h1>
     </div>
-    <form action="@if(Auth::check()){{ route('correction', ['id' => $attendance->id]) }}
-        @else{{ route('admin_correction', ['id' => $attendance->id]) }}
-        @endif" method="post">
+    <form action="{{ route('admin_correction', ['id' => $attendance->id]) }}" method="post">
         @csrf
         <table>
-            @if (is_null($hasStampCorrectionRequest) or $is_approval == true or Auth::guard('admins')->check() && $is_approval == false)
-            <!-- 詳細リンクから(未申請 or 修正承認済み or 管理者&未承認) -->
             <tr>
                 <th>名前</th>
                 <td>{{ $attendance->user->name }}</td>
@@ -25,18 +21,6 @@
                 <td>{{ $attendance->date->format('Y') }}年</td>
                 <td>{{ $attendance->date->format('m') }}月{{ $attendance->date->format('d') }}日</td>
             </tr>
-            @else
-            <!-- 申請後未承認 -->
-            <tr>
-                <th>名前</th>
-                <td>{{ $hasStampCorrectionRequest->user->name }}</td>
-            </tr>
-            <tr>
-                <th>日付</th>
-                <td>{{ $hasStampCorrectionRequest->target_date->format('Y') }}年</td>
-                <td>{{ $hasStampCorrectionRequest->target_date->format('m') }}月{{ $hasStampCorrectionRequest->target_date->format('d') }}日</td>
-            </tr>
-            @endif
             <tr>
                 <th>出勤・退勤</th>
                 <td><input type="text" class="attendance-time" name="start" value="{{ old('start', substr($attendance->start_time, 0, 5)) }}"></td>
@@ -51,9 +35,8 @@
                 <td>@error('end') {{ $message }} @enderror</td>
             </tr>
             @endif
-            @if ($attendance->rests)
-            <!-- 休憩があった場合 -->
-            @foreach($attendance->rests as $index => $rest)
+            @if ($rests)
+            @foreach($rests as $index => $rest)
             <tr>
                 <th>休憩</th>
                 <td><input type="text" class="attendance-time" name="rest_start[{{ $index }}]" value="{{ old('rest_start.'.$index, substr($rest->start_time, 0, 5)) }}"></td>
@@ -70,7 +53,6 @@
             @endif
             @endforeach
             @endif
-            <!-- 新規休憩入力フィールド -->
             <tr>
                 <th>休憩</th>
                 <td><input type="text" class="attendance-time" name="newRest_start" value="{{ old('newRest_start') }}"></td>
@@ -91,7 +73,7 @@
                     <textarea name="remarks" id="" class="remarks" value="">
                         @if (is_null($hasStampCorrectionRequest))
                             {{ old('remarks') }}
-                        @else
+                        @elseif ($is_approval)
                             {{ $hasStampCorrectionRequest->request_reason }}
                         @endif
                     </textarea>
@@ -104,15 +86,10 @@
             </tr>
             @enderror
         </table>
-        @if (is_null($hasStampCorrectionRequest) or Auth::guard('admins')->check() && $is_approval == false)
-        <!-- 未申請 or 管理者&未承認 -->
+        @if (is_null($hasStampCorrectionRequest) or $is_approval == false)
         <input type="submit" value="修正">
-        @elseif (Auth::check() && $is_approval == false)
-        <!-- 一般ユーザー&未承認 -->
-        <p class="pending__text">*承認待ちのため修正はできません</p>
         @elseif ($is_approval == true)
-        <!-- 承認済み -->
-        <p>修正承認済み</p>
+        <p>修正済み</p>
         @endif
     </form>
 </div>

@@ -27,14 +27,14 @@
                 <td>~</td>
                 <td><input type="text" class="attendance-time" value="{{ substr($attendance->end_time, 0, 5) }}" readonly></td>
             </tr>
-            @if ($correctionRests)
+            @if ($attendance->rests)
             @php $i=1; @endphp
-            @foreach($correctionRests as $index => $correctionRest)
+            @foreach($attendance->rests as $index => $rest)
             <tr>
                 <th>休憩@if ($index == 0) @else {{ $index+1 }} @endif</th>
-                <td><input type="text" class="attendance-time" name="rest_start[{{ $index }}]" value="{{ substr($correctionRest->start_time, 0, 5) }}" readonly></td>
+                <td><input type="text" class="attendance-time" name="rest_start[{{ $index }}]" value="{{ substr($rest->start_time, 0, 5) }}" readonly></td>
                 <td>~</td>
-                <td><input type="text" class="attendance-time" name="rest_end[{{ $index }}]" value="{{ substr($correctionRest->end_time, 0, 5) }}" readonly></td>
+                <td><input type="text" class="attendance-time" name="rest_end[{{ $index }}]" value="{{ substr($rest->end_time, 0, 5) }}" readonly></td>
             </tr>
             @endforeach
             @endif
@@ -46,7 +46,7 @@
             </tr>
             <tr>
                 <th>備考</th>
-                <td><textarea id="" class="remarks">{{ $correction->request_reason }}</textarea></td>
+                <td><textarea id="" class="remarks" readonly>{{ $correction->request_reason }}</textarea></td>
             </tr>
         </table>
         @if ($correction->is_approval == false)

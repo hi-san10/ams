@@ -42,7 +42,7 @@ Route::group(['prefix' => 'attendance'], function()
 
     Route::get('/list/{month?}', [AttendanceController::class, 'list'])->name('attendance_list');
 
-    Route::get('/detail/{id?}', [AttendanceController::class, 'detail'])->name('attendance_detail');
+    Route::get('/{id}', [AttendanceController::class, 'detail'])->name('attendance_detail');
 
     Route::post('/request/{id}', [AttendanceController::class, 'request'])->name('attendance_request');
 });
@@ -73,7 +73,8 @@ Route::group(['prefix' => 'admin'], function()
     Route::get('/stamp_correction_request/approve/{attendance_correct_request}', [AdminController::class, 'approval_detail'])->name('approval_detail');
 
     Route::post('/approve/{id?}', [AdminController::class, 'approve'])->name('approve');
+
+    Route::post('/correction{id}', [AdminController::class, 'correction'])->name('admin_correction');
+
 });
-
-
 

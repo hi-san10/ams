@@ -15,12 +15,12 @@ class CorrectionAttendanceController extends Controller
 {
     public function correction(CorrectionRequest $request)
     {
-        $Attendance = Attendance::where('id', $request->id)->first();
+        $attendance = Attendance::where('id', $request->id)->first();
 
         $correction = StampCorrectionRequest::create([
             'user_id' => Auth::id(),
-            'attendance_id' => $Attendance->id,
-            'target_date' => $Attendance->date,
+            'attendance_id' => $attendance->id,
+            'target_date' => $attendance->date,
             'request_date' => CarbonImmutable::today(),
             'request_reason' => $request->remarks
         ]);

@@ -86,21 +86,34 @@ class AttendanceController extends Controller
 
     public function detail(Request $request)
     {
-        $attendance = Attendance::with('user')->where('id', $request->id)->first();
+        $attendance = Attendance::with('user', 'rests')->where('id', $request->id)->first();
 
-        $hasStampCorrectionRequest = StampCorrectionRequest::where('attendance_id', $attendance->id)->first();
-        $is_approval = 0;
-        if ($hasStampCorrectionRequest)
+        $hasStampCorrectionRequest = StampCorrectionRequest::with('user')->where('attendance_id', $attendance->id)->first();
+        if (is_null($hasStampCorrectionRequest))
         {
+            $is_approval = false;
+        }else{
             $is_approval = $hasStampCorrectionRequest->is_approval;
         }
+        // $is_approval = 0;
+        // if ($hasStampCorrectionRequest)
+        // {
+        //     $is_approval = 1;
+        // }
 
-        if (is_null($hasStampCorrectionRequest) or $hasStampCorrectionRequest->is_approval)
+        // if (Auth::guard('admins')->check())
+        // {
+        //     $rests = Rest::where('attendance_id', $attendance->id)->get();
+        // }elseif (is_null($hasStampCorrectionRequest) or $hasStampCorrectionRequest->is_approval == true){
+        //     $rests = Rest::where('attendance_id', $attendance->id)->get();
+        // }
+        if ($hasStampCorrectionRequest && $is_approval == false && Auth::check())
         {
-            $rests = Rest::where('attendance_id', $attendance->id)->get();
-
-            return view('attendances.detail', compact('attendance', 'rests', 'hasStampCorrectionRequest', 'is_approval'));
+            $attendance = CorrectionAttendance::with('rests')->where('stamp_correction_request_id', $hasStampCorrectionRequest->id)->first();
         }
+        return view('attendances.detail', compact('attendance', 'hasStampCorrectionRequest', 'is_approval'));
+
+
 
         $correctionAttendance = CorrectionAttendance::where('stamp_correction_request_id', $hasStampCorrectionRequest->id)->first();
         $correctionRests = CorrectionRest::where('correction_attendance_id', $correctionAttendance->id)->get();
