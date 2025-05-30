@@ -13,6 +13,5 @@ class Rest extends Model
         'attendance_id',
         'start_time',
         'end_time',
-        // 'total_time'
     ];
 }
