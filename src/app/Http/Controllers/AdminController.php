@@ -14,7 +14,7 @@ use App\Models\StampCorrectionRequest;
 use App\Models\CorrectionAttendance;
 use App\Models\CorrectionRest;
 use App\Http\Requests\LoginRequest;
-use PhpParser\Node\Stmt\Foreach_;
+use App\Http\Requests\CorrectionRequest;
 
 class AdminController extends Controller
 {
@@ -161,7 +161,8 @@ class AdminController extends Controller
         return redirect()->route('approval_detail', ['attendance_correct_request' => $request->id]);
     }
 
-    public function correction(Request $request)
+    public function correction(CorrectionRequest $request)
+    // バリデーション
     {
         $attendance = Attendance::with('user')->where('id', $request->id)->first();
         $attendance->update(['start_time' => $request->start, 'end_time' => $request->end]);
