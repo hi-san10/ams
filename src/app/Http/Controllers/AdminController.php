@@ -100,8 +100,9 @@ class AdminController extends Controller
         } else {
             $carbon = new CarbonImmutable($baseDate);
         }
-        $previousMonth = $carbon->subMonth(1);
-        $nextMonth = $carbon->addMonth(1);
+
+        $previousMonth = $carbon->subMonthNoOverflow(1);
+        $nextMonth = $carbon->addMonthNoOverflow(1);
 
         $attendances = Attendance::with('rests')->where('user_id', $user->id)->whereYear('date', $carbon)->whereMonth('date', $carbon)
             ->orderBy('date', 'asc')->get();
@@ -162,7 +163,6 @@ class AdminController extends Controller
     }
 
     public function correction(CorrectionRequest $request)
-    // バリデーション
     {
         $attendance = Attendance::with('user')->where('id', $request->id)->first();
         $attendance->update(['start_time' => $request->start, 'end_time' => $request->end]);
