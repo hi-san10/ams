@@ -38,7 +38,7 @@
         <p class="attendance-massage">お疲れ様でした。</p>
         @elseif (!$rest)
         <a href="/attendance/end" class="attendance_link">退勤</a>
-        <a href="/rest/start" class="attendance_link--white">休憩入</a>
+        <a href="/rest/start" class="attendance_link--white rest_start">休憩入</a>
         @else
         <a href="/rest/end" class="attendance_link--white">休憩戻</a>
         @endif

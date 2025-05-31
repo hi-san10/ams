@@ -5,7 +5,7 @@
 @endsection
 
 @section('header')
-    @include('layouts/in_work')
+@include('layouts/in_work')
 @endsection
 
 @section('content')
@@ -14,18 +14,18 @@
         <h1 class="title-text">勤怠一覧</h1>
     </div>
     <div class="attendance_list-date">
-        <a href="{{ route('attendance_list', ['month' => $previousMonth]) }}" class="date">←前月</a>
+        <a href="{{ route('attendance_list', ['month' => $previousMonth]) }}" class="date gray">←前月</a>
         <p class="date">{{ $carbon->format('Y/m') }}</p>
-        <a href="{{ route('attendance_list', ['month' => $nextMonth]) }}" class="date">→翌月</a>
+        <a href="{{ route('attendance_list', ['month' => $nextMonth]) }}" class="date gray">→翌月</a>
     </div>
     <table>
-        <tr>
-            <th>日付</th>
+        <tr class="top">
+            <th class="left-top">日付</th>
             <th>出勤</th>
             <th>退勤</th>
             <th>休憩</th>
             <th>合計</th>
-            <th>詳細</th>
+            <th class="right-top">詳細</th>
         </tr>
         @foreach($attendances as $attendance)
         <tr>
