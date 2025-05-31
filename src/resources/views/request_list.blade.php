@@ -3,6 +3,10 @@
 @section('css')
 @endsection
 
+@section('header')
+    @include('layouts/in_work')
+@endsection
+
 @section('content')
 <div class="request_list-container">
     <div class="request_list-title">

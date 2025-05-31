@@ -4,6 +4,14 @@
 <link rel="stylesheet" href="{{ asset('css/detail.css') }}">
 @endsection
 
+@section('header')
+    @if (Auth::guard('admins')->check())
+        @include('layouts/admin')
+    @else
+        @include('layouts/in_work')
+    @endif
+@endsection
+
 @section('content')
 <div class="detail-container">
     <div class="detail-title">

@@ -3,6 +3,10 @@
 @section('css')
 @endsection
 
+@section('header')
+    @include('layouts/admin')
+@endsection
+
 @section('content')
 <div class="staff_list-container">
     <h1 class="container__title">スタッフ一覧</h1>

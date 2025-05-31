@@ -4,6 +4,10 @@
 <link rel="stylesheet" href="{{ asset('css/detail.css') }}">
 @endsection
 
+@section('header')
+    @include('layouts/admin')
+@endsection
+
 @section('content')
 <div class="detail-container">
     <div class="detail-title">

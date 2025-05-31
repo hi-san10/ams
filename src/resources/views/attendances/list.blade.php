@@ -4,6 +4,10 @@
 <link rel="stylesheet" href="{{ asset('css/list.css') }}">
 @endsection
 
+@section('header')
+    @include('layouts/in_work')
+@endsection
+
 @section('content')
 <div class="attendance_list-container">
     <div class="attendance_list-title">
