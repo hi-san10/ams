@@ -1,0 +1,108 @@
+body {
+    background-color: #D9D9D9;
+}
+
+.detail-container {
+    width: 60%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.detail-title {
+    width: 100%;
+    margin: 4% 0 3% 0;
+}
+
+.title-text {
+    width: 100%;
+    border-left: 10px solid black;
+    padding-left: 1%;
+}
+
+.detail__form {
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 5px;
+    border-radius: 5px;
+}
+
+th {
+    text-align: left;
+    padding: 0 50px 0 50px;
+}
+
+td {
+    font-weight: bold;
+    text-align: center;
+}
+
+th, td {
+    height: 45px;
+}
+
+tr {
+    background-color: white;
+}
+
+.top {
+    border-radius: 5px 5px 0 0 ;
+}
+
+.left-top {
+    border-radius: 5px 0 0 0 ;
+}
+
+.right-top {
+    border-radius: 0 5px 0 0 ;
+}
+
+.left-bottom {
+    border-radius: 0 0 0 5px;
+}
+
+.right-bottom {
+    border-radius: 0 0 5px 0;
+}
+
+input {
+    border: 0.1px solid gray;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.remarks {
+    border: 0.1px solid gray;
+    border-radius: 5px;
+    margin-top: 5px;
+    text-align: center;
+    width: 85%;
+}
+
+.correct__btn {
+    background-color: black;
+    color: white;
+    display: block;
+    margin-left: auto;
+    width: 10%;
+    height: 15%;
+    margin-top: 3%;
+}
+
+.pending__text {
+    color: red;
+    text-align: right;
+    margin-top: 3%;
+}
+
+.approval__text {
+    text-align: right;
+    margin-top: 3%;
+    font-weight: bold;
+}

@@ -5,32 +5,35 @@
 @endsection
 
 @section('header')
-    @if (Auth::guard('admins')->check())
-        @include('layouts/admin')
-    @else
-        @include('layouts/in_work')
-    @endif
+@if (Auth::guard('admins')->check())
+@include('layouts/admin')
+@else
+@include('layouts/in_work')
+@endif
 @endsection
 
 @section('content')
 <div class="detail-container">
     <div class="detail-title">
-        <h1 class="title__text">勤怠詳細</h1>
+        <h1 class="title-text">勤怠詳細</h1>
     </div>
     <form action="@if(Auth::check()){{ route('correction', ['id' => $attendance->id]) }}
         @else{{ route('admin_correction', ['id' => $attendance->id]) }}
-        @endif" method="post">
+        @endif" method="post" class="detail__form">
         @csrf
         <table>
             @if (is_null($hasStampCorrectionRequest) or $is_approval == true or Auth::guard('admins')->check() && $is_approval == false)
             <!-- 詳細リンクから(未申請 or 修正承認済み or 管理者&未承認) -->
-            <tr>
-                <th>名前</th>
+            <tr class="top">
+                <th class="left-top">名前</th>
                 <td>{{ $attendance->user->name }}</td>
+                <td></td>
+                <td class="right-top"></td>
             </tr>
             <tr>
                 <th>日付</th>
                 <td>{{ $attendance->date->format('Y') }}年</td>
+                <td></td>
                 <td>{{ $attendance->date->format('m') }}月{{ $attendance->date->format('d') }}日</td>
             </tr>
             @else
@@ -38,10 +41,13 @@
             <tr>
                 <th>名前</th>
                 <td>{{ $hasStampCorrectionRequest->user->name }}</td>
+                <td></td>
+                <td></td>
             </tr>
             <tr>
                 <th>日付</th>
                 <td>{{ $hasStampCorrectionRequest->target_date->format('Y') }}年</td>
+                <td></td>
                 <td>{{ $hasStampCorrectionRequest->target_date->format('m') }}月{{ $hasStampCorrectionRequest->target_date->format('d') }}日</td>
             </tr>
             @endif
@@ -54,9 +60,9 @@
             @if ($errors->has('start') or $errors->has('end'))
             <tr>
                 <th></th>
-                <td>@error('start') {{ $message }} @enderror</td>
+                <td style="color: red;">@error('start') {{ $message }} @enderror</td>
                 <td></td>
-                <td>@error('end') {{ $message }} @enderror</td>
+                <td style="color: red;">@error('end') {{ $message }} @enderror</td>
             </tr>
             @endif
             @if ($attendance->rests)
@@ -71,9 +77,9 @@
             @if ($errors->has('rest_start.*') or $errors->has('rest_end.*'))
             <tr>
                 <th></th>
-                <td>@error('rest_start.'.$index) {{ $message }} @enderror</td>
+                <td style="color: red;">@error('rest_start.'.$index) {{ $message }} @enderror</td>
                 <td></td>
-                <td>@error('rest_end.'.$index) {{ $message }} @enderror</td>
+                <td style="color: red;">@error('rest_end.'.$index) {{ $message }} @enderror</td>
             </tr>
             @endif
             @endforeach
@@ -88,14 +94,14 @@
             @if ($errors->has('newRest_start') or $errors->has('newRest_end'))
             <tr>
                 <th></th>
-                <td>@error('newRest_start') {{ $message }} @enderror</td>
+                <td style="color: red;">@error('newRest_start') {{ $message }} @enderror</td>
                 <td></td>
-                <td>@error('newRest_end') {{ $message }} @enderror</td>
+                <td style="color: red;">@error('newRest_end') {{ $message }} @enderror</td>
             </tr>
             @endif
             <tr>
-                <th>備考</th>
-                <td>
+                <th class="left-bottom">備考</th>
+                <td colspan="3" class="right-bottom">
                     <textarea name="remarks" id="" class="remarks" value="">
                         @if (is_null($hasStampCorrectionRequest))
                             {{ old('remarks') }}
@@ -104,23 +110,26 @@
                         @endif
                     </textarea>
                 </td>
+                <td></td>
             </tr>
             @error('remarks')
             <tr>
                 <th></th>
-                <td>{{ $message }}</td>
+                <td style="color: red;">{{ $message }}</td>
+                <td></td>
+                <td></td>
             </tr>
             @enderror
         </table>
         @if (is_null($hasStampCorrectionRequest) or Auth::guard('admins')->check() && $is_approval == false)
         <!-- 未申請 or 管理者&未承認 -->
-        <input type="submit" value="修正">
+        <input type="submit" value="修正" class="correct__btn">
         @elseif (Auth::check() && $is_approval == false)
         <!-- 一般ユーザー&未承認 -->
         <p class="pending__text">*承認待ちのため修正はできません</p>
         @elseif ($is_approval == true)
         <!-- 承認済み -->
-        <p>修正承認済み</p>
+        <p class="approval__text">修正承認済み</p>
         @endif
     </form>
 </div>
