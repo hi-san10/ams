@@ -20,7 +20,12 @@ class AttendanceController extends Controller
 
         $user = Attendance::where('user_id', Auth::id())->where('date', $date)->first();
         $rest = Rest::when($user, fn ($query) => $query->where('attendance_id', $user->id)->whereNull('end_time'))->exists();
-        $workEnd = Attendance::where('user_id', Auth::id())->whereNull('end_time')->exists();
+        if ($user)
+        {
+            $workEnd = $user->end_time;
+        }else{
+            $workEnd = null;
+        }
 
         return view('attendances.attendance', compact('carbon', 'user', 'workEnd', 'rest'));
     }
@@ -95,18 +100,7 @@ class AttendanceController extends Controller
         }else{
             $is_approval = $hasStampCorrectionRequest->is_approval;
         }
-        // $is_approval = 0;
-        // if ($hasStampCorrectionRequest)
-        // {
-        //     $is_approval = 1;
-        // }
 
-        // if (Auth::guard('admins')->check())
-        // {
-        //     $rests = Rest::where('attendance_id', $attendance->id)->get();
-        // }elseif (is_null($hasStampCorrectionRequest) or $hasStampCorrectionRequest->is_approval == true){
-        //     $rests = Rest::where('attendance_id', $attendance->id)->get();
-        // }
         if ($hasStampCorrectionRequest && $is_approval == false && Auth::check())
         {
             $attendance = CorrectionAttendance::with('rests')->where('stamp_correction_request_id', $hasStampCorrectionRequest->id)->first();
