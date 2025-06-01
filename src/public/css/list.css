@@ -2,7 +2,7 @@ body {
     background-color: #D9D9D9;
 }
 
-.attendance_list-container {
+.attendance_list-container, .staff_list-container {
     width: 60%;
     margin: auto;
     display: flex;
@@ -11,7 +11,7 @@ body {
     align-items: center;
 }
 
-.attendance_list-title {
+.attendance_list-title, .staff_list-title {
     width: 100%;
     margin: 4% 0 3% 0;
 }
