@@ -224,7 +224,7 @@ class AdminController extends Controller
 
     public function csv(Request $request)
     {
-        $carbon = CarbonImmutable::today();
+        $carbon = new CarbonImmutable($request->month);
         $attendances = Attendance::with('rests')->where('user_id', $request->id)->whereYear('date', $carbon)->whereMonth('date', $carbon)->oldest('date')->get();
 
         $head = ['日付', '出勤', '退勤', '休憩', '合計'];

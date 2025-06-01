@@ -76,7 +76,7 @@ Route::group(['prefix' => 'admin'], function()
 
     Route::post('/correction{id}', [AdminController::class, 'correction'])->name('admin_correction');
 
-    Route::post('/csv/{id?}', [AdminController::class, 'csv'])->name('csv');
+    Route::get('/csv/{id}/{month?}', [AdminController::class, 'csv'])->name('csv');
 
 });
 
