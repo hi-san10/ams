@@ -77,7 +77,7 @@ class CorrectionAttendanceController extends Controller
                 $correction_requests = StampCorrectionRequest::with('user', 'attendance')->where([['user_id', Auth::id()], ['is_approval', true]])->get();
             }
 
-            return view('request_list', compact('correction_requests'));
+            return view('request_list', compact('correction_requests', 'prm'));
         }elseif (Auth::guard('admins')->check())
         {
             $prm = $request->page;
@@ -89,7 +89,7 @@ class CorrectionAttendanceController extends Controller
                 $correction_requests = StampCorrectionRequest::with('user', 'attendance')->where('is_approval', true)->get();
             }
 
-            return view('admins.request_list', compact('correction_requests'));
+            return view('admins.request_list', compact('correction_requests', 'prm'));
         }
     }
 }

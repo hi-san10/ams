@@ -38,5 +38,6 @@
         </tr>
         @endforeach
     </table>
+    <div class="bottom"></div>
 </div>
 @endsection

@@ -2,7 +2,7 @@ body {
     background-color: #D9D9D9;
 }
 
-.attendance_list-container {
+.request_list-container {
     width: 60%;
     margin: auto;
     display: flex;
@@ -11,7 +11,7 @@ body {
     align-items: center;
 }
 
-.attendance_list-title {
+.request_list-title {
     width: 100%;
     margin: 4% 0 3% 0;
 }
@@ -22,60 +22,45 @@ body {
     padding-left: 1%;
 }
 
-.attendance_list-date {
+.status_bar {
+    border-bottom: 1px solid black;
     width: 100%;
-    height: 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: white;
-    border-radius: 5px;
     margin-bottom: 3%;
 }
 
-.date {
-    font-weight: bold;
-}
-
-.gray {
+.status_bar__link {
     text-decoration: none;
-    color: #737373;
-    padding: 20px;
+    color: black;
+    padding-left: 5%;
 }
 
 table {
+    border-radius: 5px;
     width: 100%;
     border-collapse: separate;
     border-spacing: 0 1px;
-    border-radius: 5px;
 }
 
 tr {
     background-color: white;
-    margin-bottom: 5px;
-    width: 100%;
+    border-radius: 5px;
 }
 
 th, td {
-    margin-bottom: 5px;
     width: 10%;
-    color: #737373;
+        color: #737373;
 }
 
 td {
     text-align: center;
 }
 
-.top {
-    border-radius: 10px 10px 0 0 ;
-}
-
 .left-top {
-    border-radius: 10px 0 0 0 ;
+    border-radius: 5px 0 0 0 ;
 }
 
 .right-top {
-    border-radius: 0 10px 0 0;
+    border-radius: 0 5px 0 0 ;
 }
 
 .detail {
