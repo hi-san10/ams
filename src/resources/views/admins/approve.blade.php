@@ -5,24 +5,27 @@
 @endsection
 
 @section('header')
-    @include('layouts/admin')
+@include('layouts/admin')
 @endsection
 
 @section('content')
 <div class="detail-container">
     <div class="detail-title">
-        <h1 class="title__text">勤怠詳細</h1>
+        <h1 class="title-text">勤怠詳細</h1>
     </div>
-    <form action="{{ route('approve', ['id' => $correction->id]) }}" method="post">
+    <form action="{{ route('approve', ['id' => $correction->id]) }}" method="post" class="detail__form">
         @csrf
         <table>
             <tr>
-                <th>名前</th>
+                <th class="left-top">名前</th>
                 <td>{{ $correction->user->name }}</td>
+                <td></td>
+                <td class="right-top"></td>
             </tr>
             <tr>
                 <th>日付</th>
                 <td>{{ $correction->target_date->format('Y') }}年</td>
+                <td></td>
                 <td>{{ $correction->target_date->format('m') }}月{{ $correction->target_date->format('d') }}日</td>
             </tr>
             <tr>
@@ -50,13 +53,15 @@
             </tr>
             <tr>
                 <th>備考</th>
-                <td><textarea id="" class="remarks" readonly>{{ $correction->request_reason }}</textarea></td>
+                <td colspan="3"><textarea id="" class="remarks" readonly>{{ $correction->request_reason }}</textarea></td>
+                <td></td>
             </tr>
         </table>
+        <div class="bottom"></div>
         @if ($correction->is_approval == false)
-        <input type="submit" value="承認">
+        <input type="submit" class="correct__btn" value="承認">
         @else
-        <p>承認済み</p>
+        <p class="approval__text is_approval">承認済み</p>
         @endif
     </form>
 </div>

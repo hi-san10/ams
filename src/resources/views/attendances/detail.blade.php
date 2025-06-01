@@ -101,7 +101,7 @@
             @endif
             <tr>
                 <th class="left-bottom">備考</th>
-                <td colspan="3" class="right-bottom">
+                <td colspan="3">
                     <textarea name="remarks" id="" class="remarks" value="">
                         @if (is_null($hasStampCorrectionRequest))
                             {{ old('remarks') }}
@@ -121,6 +121,7 @@
             </tr>
             @enderror
         </table>
+        <div class="bottom"></div>
         @if (is_null($hasStampCorrectionRequest) or Auth::guard('admins')->check() && $is_approval == false)
         <!-- 未申請 or 管理者&未承認 -->
         <input type="submit" value="修正" class="correct__btn">
