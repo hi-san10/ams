@@ -89,3 +89,15 @@ td {
     background-color: white;
     border-radius: 0 0 5px 5px;
 }
+
+.csv {
+    text-decoration: none;
+    color: white;
+    background-color: black;
+    border-radius: 5px;
+    display: block;
+    margin-left: auto;
+    margin-top: 3%;
+    width: 100px;
+    text-align: center;
+}

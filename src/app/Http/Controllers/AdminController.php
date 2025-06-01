@@ -15,6 +15,7 @@ use App\Models\CorrectionAttendance;
 use App\Models\CorrectionRest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\CorrectionRequest;
+use Illuminate\Support\Facades\Response;
 
 class AdminController extends Controller
 {
@@ -219,5 +220,58 @@ class AdminController extends Controller
         }
 
         return redirect()->route('attendance_detail', ['id' => $attendance->id]);
+    }
+
+    public function csv(Request $request)
+    {
+        $carbon = CarbonImmutable::today();
+        $attendances = Attendance::with('rests')->where('user_id', $request->id)->whereYear('date', $carbon)->whereMonth('date', $carbon)->oldest('date')->get();
+
+        $head = ['日付', '出勤', '退勤', '休憩', '合計'];
+
+        $temps = [];
+        array_push($temps, $head);
+
+        foreach($attendances as $attendance)
+        {
+            $start = new CarbonImmutable($attendance->start_time);
+            $end = new CarbonImmutable($attendance->end_time);
+            $workingTime = $start->diffInSeconds($end);
+
+            $number = 0;
+            foreach($attendance->rests as $rest)
+            {
+                $restStart = new CarbonImmutable($rest->start_time);
+                $restEnd = new CarbonImmutable($rest->end_time);
+                $diffRest = $restStart->diffInSeconds($restEnd);
+                $number = $number + $diffRest;
+            }
+            $attendance->totalRest = gmdate('H:i:s', $number);
+            $attendance->totalWork = gmdate('H:i:s', $workingTime - $number);
+
+            $temp = [
+                substr($attendance->date, 0, 10),
+                substr($attendance->start_time, 0, 5),
+                substr($attendance->end_time, 0, 5),
+                substr($attendance->totalRest, 0, 5),
+                substr($attendance->totalWork, 0, 5)
+            ];
+            array_push($temps, $temp);
+        }
+
+        $f = fopen('php://temp', 'r+b');
+        foreach($temps as $temp)
+        {
+            fputcsv($f, $temp);
+        }
+
+        rewind($f);
+        $csv = str_replace(PHP_EOL, "\r\n", stream_get_contents($f));
+        $csv = mb_convert_encoding($csv, 'SJIS-win', 'UTF-8');
+        $headers = array(
+            'Content-Type' => 'text/csv',
+        );
+
+        return Response::make($csv, 200, $headers);
     }
 }

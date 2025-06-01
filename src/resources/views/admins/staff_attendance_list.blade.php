@@ -5,7 +5,7 @@
 @endsection
 
 @section('header')
-    @include('layouts/admin')
+@include('layouts/admin')
 @endsection
 
 @section('content')
@@ -18,25 +18,30 @@
         <p class="date">{{ $carbon->format('Y/m') }}</p>
         <a href="{{ route('staff_attendance_list', ['month' => $nextMonth, 'id' => $user->id]) }}" class="date gray">→翌月</a>
     </div>
-    <table>
-        <tr class="top">
-            <th class="left-top">日付</th>
-            <th>出勤</th>
-            <th>退勤</th>
-            <th>休憩</th>
-            <th>合計</th>
-            <th class="right-top">詳細</th>
-        </tr>
-        @foreach($attendances as $attendance)
-        <tr>
-            <td>{{ $attendance->date->isoFormat('MM/D(ddd)') }}</td>
-            <td>{{ substr($attendance->start_time, 0, 5) }}</td>
-            <td>{{ substr($attendance->end_time, 0, 5) }}</td>
-            <td>{{ substr($attendance->totalRest, 0, 5) }}</td>
-            <td>{{ substr($attendance->totalWork, 0, 5) }}</td>
-            <td><a href="{{ route('attendance_detail', ['id' => $attendance->id]) }}" class="detail">詳細</a></td>
-        </tr>
-        @endforeach
-    </table>
+    <form action="{{ route('csv', ['id' => $user->id]) }}" method="post">
+        @csrf
+        <table>
+            <tr class="top">
+                <th class="left-top">日付</th>
+                <th>出勤</th>
+                <th>退勤</th>
+                <th>休憩</th>
+                <th>合計</th>
+                <th class="right-top">詳細</th>
+            </tr>
+            @foreach($attendances as $attendance)
+            <tr>
+                <td><input type="hidden" name="date[]" value="{{ $attendance->date }}">{{ $attendance->date->isoFormat('MM/D(ddd)') }}</td>
+                <td><input type="hidden" name="start_time[]" value="{{ $attendance->start_time }}">{{ substr($attendance->start_time, 0, 5) }}</td>
+                <td><input type="hidden" name="end_time[]" value="{{ $attendance->end_time }}">{{ substr($attendance->end_time, 0, 5) }}</td>
+                <td><input type="hidden" name="totalRest[]" value="{{ $attendance->totalRest }}">{{ substr($attendance->totalRest, 0, 5) }}</td>
+                <td><input type="hidden" name="totalWork[]" value="{{ $attendance->totalWork }}">{{ substr($attendance->totalWork, 0, 5) }}</td>
+                <td><a href="{{ route('attendance_detail', ['id' => $attendance->id]) }}" class="detail">詳細</a></td>
+            </tr>
+            @endforeach
+        </table>
+        <div class="bottom"></div>
+        <input type="submit" class="csv" value="csv出力">
+    </form>
 </div>
 @endsection
