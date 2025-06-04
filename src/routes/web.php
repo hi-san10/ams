@@ -26,7 +26,7 @@ Route::post('/login', [LoginController::class, 'postLogin']);
 Route::get('/logout', [LoginController::class, 'logout']);
 
 Route::get('/register', [LoginController::class, 'register']);
-Route::post('/register/store', [LoginController::class, 'store']);
+Route::post('/register/store', [LoginController::class, 'store'])->name('store');
 
 Route::get('/verification/{email}', [LoginController::class, 'verification'])->name('verification');
 
