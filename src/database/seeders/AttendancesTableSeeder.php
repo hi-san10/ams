@@ -6,7 +6,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class AttendanceTableSeeder extends Seeder
+class AttendancesTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.

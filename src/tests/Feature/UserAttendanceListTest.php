@@ -7,8 +7,8 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Attendance;
 use Carbon\CarbonImmutable;
-use Database\Seeders\AttendanceTableSeeder;
-use Database\Seeders\RestTableSeeder;
+use Database\Seeders\AttendancesTableSeeder;
+use Database\Seeders\RestsTableSeeder;
 use Database\Seeders\UsersTableSeeder;
 
 class UserAttendanceListTest extends TestCase
@@ -20,8 +20,8 @@ class UserAttendanceListTest extends TestCase
         parent::setUp();
 
         $this->seed(UsersTableSeeder::class);
-        $this->seed(AttendanceTableSeeder::class);
-        $this->seed(RestTableSeeder::class);
+        $this->seed(AttendancesTableSeeder::class);
+        $this->seed(RestsTableSeeder::class);
         $user = User::find(1);
 
         $this->get('/login')->assertStatus(200);
