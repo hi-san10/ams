@@ -7,7 +7,9 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Attendance;
 use Carbon\CarbonImmutable;
-use Database\Seeders\DatabaseSeeder;
+use Database\Seeders\AttendanceTableSeeder;
+use Database\Seeders\RestTableSeeder;
+use Database\Seeders\UsersTableSeeder;
 
 class UserAttendanceListTest extends TestCase
 {
@@ -17,7 +19,9 @@ class UserAttendanceListTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(DatabaseSeeder::class);
+        $this->seed(UsersTableSeeder::class);
+        $this->seed(AttendanceTableSeeder::class);
+        $this->seed(RestTableSeeder::class);
         $user = User::find(1);
 
         $this->get('/login')->assertStatus(200);
@@ -125,7 +129,8 @@ class UserAttendanceListTest extends TestCase
 
         $this->get('/attendance/list')->assertViewIs('attendances.list');
 
-        $attendance = Attendance::where('user_id', $user->id)->first();
-        $this->get(route('attendance_detail', ['id' => $attendance->id]))->assertViewIs('attendances.detail');
+        $carbon = new CarbonImmutable();
+        $attendance = Attendance::where('user_id', $user->id)->where('date', $carbon)->first();
+        $this->get(route('attendance_detail', ['id' => $attendance->id]))->assertViewHas('attendance', $attendance);
     }
 }
