@@ -43,5 +43,32 @@ class AttendancesTableSeeder extends Seeder
         ];
 
         DB::table('attendances')->insert($content);
+
+        $content = [
+            'user_id' => '2',
+            'date' => $carbon,
+            'start_time' => '08:00',
+            'end_time' => '17:00'
+        ];
+
+        DB::table('attendances')->insert($content);
+
+        $content = [
+            'user_id' => '2',
+            'date' => $carbon->subDay(1),
+            'start_time' => '08:00',
+            'end_time' => '17:00'
+        ];
+
+        DB::table('attendances')->insert($content);
+
+        $content = [
+            'user_id' => '2',
+            'date' => $carbon->addDay(1),
+            'start_time' => '08:00',
+            'end_time' => '17:00'
+        ];
+
+        DB::table('attendances')->insert($content);
     }
 }

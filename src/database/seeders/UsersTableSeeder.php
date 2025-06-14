@@ -24,5 +24,14 @@ class UsersTableSeeder extends Seeder
         ];
 
         DB::table('users')->insert($content);
+
+        $content = [
+            'name' => '佐藤',
+            'email' => 'sato@mail.com',
+            'password' => Hash::make('99999999'),
+            'email_verified_at' => CarbonImmutable::today()
+        ];
+
+        DB::table('users')->insert($content);
     }
 }

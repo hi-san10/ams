@@ -37,5 +37,29 @@ class RestsTableSeeder extends Seeder
         ];
 
         DB::table('rests')->insert($content);
+
+        $content = [
+            'attendance_id' => 4,
+            'start_time' => '10:00',
+            'end_time' => '10:10'
+        ];
+
+        DB::table('rests')->insert($content);
+
+        $content = [
+            'attendance_id' => 5,
+            'start_time' => '10:00',
+            'end_time' => '10:10'
+        ];
+
+        DB::table('rests')->insert($content);
+
+        $content = [
+            'attendance_id' => 6,
+            'start_time' => '10:00',
+            'end_time' => '10:10'
+        ];
+
+        DB::table('rests')->insert($content);
     }
 }
