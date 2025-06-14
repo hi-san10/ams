@@ -146,7 +146,9 @@ class AdminController extends Controller
         $stamp_correction_request = StampCorrectionRequest::where('id', $request->id)->first();
         $stamp_correction_request->update(['is_approval' => true]);
 
+        $correctionAttendance = CorrectionAttendance::where('stamp_correction_request_id', $stamp_correction_request->id)->first();
         $attendance = Attendance::with('rests')->where('id', $stamp_correction_request->attendance_id)->first();
+        $attendance->update(['start_time' => $correctionAttendance->start_time, 'end_time' => $correctionAttendance->end_time]);
 
         $rests = $attendance->rests;
         foreach($rests as $rest)
