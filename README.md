@@ -2,39 +2,6 @@
 
 ## 勤怠管理アプリ
 
-## 機能一覧
-・ 会員登録
-
-・ 会員登録時にメールによる本人認証
-
-・ 認証メール再送
-
-・ ログイン
-
-・ ログアウト
-
-・ 勤怠打刻
-
-・ 月毎の勤怠一覧
-
-・ 勤怠詳細
-
-・ 勤怠情報修正後、申請
-
-・ 修正した勤怠一覧(未承認、承認済み)
-
-・ 管理者ログイン
-
-・ スタッフ一覧
-
-・ スタッフの月毎の勤怠一覧
-
-・ 当日の勤怠一覧
-
-・ 修正申請一覧(未承認、承認済み)
-
-・ 修正申請承認
-
 ## 環境構築
 
 ### Dockerビルド
@@ -76,17 +43,16 @@
 
 6. php artisan db:seed
 
-
 ・ 一般ユーザー(スタッフ)のダミーデータ10件分
 
+・ ログイン用ユーザーのダミーデータ1件分↓
+![Image](https://github.com/user-attachments/assets/a84c91c2-2a64-4604-b656-69e99cfe4551)
 ・ 勤怠情報(出勤、退勤)のダミーデータ50件分
 
 ・ 勤怠情報(休憩)のダミーデータ50件分
 
 ・ 管理者のダミーデータ1件分
-
-・ ユーザーのダミーデータ1件分↓
-![Image](https://github.com/user-attachments/assets/fef256f3-d5c0-446a-8505-87e1527a9970)
+![Image](https://github.com/user-attachments/assets/d7ed3551-3713-45a7-8c3f-25faa9eda3c6)
 
 ## 使用技術
 
@@ -98,18 +64,15 @@
 
 ## ER図
 
-![Image](https://github.com/user-attachments/assets/cf635c52-c126-42c2-a8cc-f72b315c29b3)
+![Image](https://github.com/user-attachments/assets/a64d9dba-e1d8-4cc6-b618-aa4c5e3c5e5e)
 
 ## テーブル仕様書
-![Image](https://github.com/user-attachments/assets/f4395c14-6650-43fd-a1a6-efe420b14921)
 
-![Image](https://github.com/user-attachments/assets/4e09a092-369c-44ee-bf44-d4ed715b6259)
+![Image](https://github.com/user-attachments/assets/b99f8ba1-de6b-46d2-b4cc-a039503efced)
 
-![Image](https://github.com/user-attachments/assets/d7d13156-b32d-4eb5-b7dc-93408c3256e7)
+![Image](https://github.com/user-attachments/assets/700867ca-dbd5-444d-b186-6b6d93e4649d)
 
-![Image](https://github.com/user-attachments/assets/bb529ba1-1b98-44c4-ae50-abc6bae9b15c)
-
-![Image](https://github.com/user-attachments/assets/3178cf4f-0999-4b5e-b2d3-487d01755437)
+![Image](https://github.com/user-attachments/assets/37162213-ddd8-42f4-b1ab-79050b4ec7cb)
 
 ## URL
 

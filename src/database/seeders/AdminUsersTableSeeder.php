@@ -18,7 +18,7 @@ class AdminUsersTableSeeder extends Seeder
         $content = [
             'name' => '管理者',
             'email' => 'admin@mail.com',
-            'password' => Hash::make('11111111'),
+            'password' => Hash::make('00000000'),
         ];
 
         DB::table('admin_users')->insert($content);
