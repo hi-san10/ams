@@ -18,7 +18,7 @@ class AttendanceFactory extends Factory
 
         return [
             'user_id' => $this->faker->numberBetween($min = 1, $max = 10),
-            'date' => $this->faker->dateTimeBetween('-2month', '+2month'),
+            'date' => $this->faker->dateTimeBetween('-1month', '+1month'),
             'start_time' => $this->faker->dateTimeBetween($date, $date->modify('+2hour'))->format('H:i:s'),
             'end_time' => $this->faker->dateTimeBetween($date->modify('+8hour'), $date->modify('+10hour'))->format('H:i:s'),
         ];

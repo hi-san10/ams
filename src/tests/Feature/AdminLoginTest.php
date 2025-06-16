@@ -5,26 +5,39 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Http\Requests\LoginRequest;
+use App\Models\AdminUser;
+use Database\Seeders\AdminUsersTableSeeder;
 use Illuminate\Support\Facades\Validator;
 
 class AdminLoginTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function setUp() :void
+    {
+        parent::setUp();
+
+        $this->seed(AdminUsersTableSeeder::class);
+    }
     /**
      * A basic feature test example.
      *@dataProvider validationProvider
      * @return void
      */
+
+    //  管理者ログイン画面バリデーション
     public function testAdminLoginValidation($inData, $outFail, $outMessage)
     {
-        $response = $this->get('/admin/login');
-        $response->assertStatus(200);
+        $this->get('/admin/login')->assertStatus(200);
+
         $request = new LoginRequest();
         $rules = $request->rules();
         $messages = $request->messages();
+
         $validator = Validator::make($inData, $rules, $messages);
         $result = $validator->fails();
         $this->assertEquals($outFail, $result);
+
         $messages = $validator->errors()->getMessages();
         $this->assertEquals($outMessage, $messages);
     }
@@ -56,10 +69,10 @@ class AdminLoginTest extends TestCase
         ];
     }
 
+    // 登録情報と異なるメールアドレスでログイン
     public function testUnRegistered()
     {
-        $response = $this->get('/admin/login');
-        $response->assertStatus(200);
+        $this->get('/admin/login')->assertStatus(200);
 
         $data = [
             'email' => 'aaaa@example.com',

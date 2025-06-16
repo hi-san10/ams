@@ -16,6 +16,7 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
+        // テスト用ユーザー
         $content = [
             'name' => 'mm',
             'email' => 'm@mm',

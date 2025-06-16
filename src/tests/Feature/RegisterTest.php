@@ -16,16 +16,20 @@ class RegisterTest extends TestCase
      * @dataProvider validationProvider
      * @return void
      */
+
+    //  会員登録画面バリデーション
     public function testRegisterValidation($inData, $outFail, $outMessage)
     {
-        $response = $this->get('/register');
-        $response->assertStatus(200);
+        $this->get('/register')->assertStatus(200);
+
         $request = new RegisterRequest();
         $rules = $request->rules();
         $messages = $request->messages();
+
         $validator = Validator::make($inData, $rules, $messages);
         $result = $validator->fails();
         $this->assertEquals($outFail, $result);
+
         $messages = $validator->errors()->getMessages();
         $this->assertEquals($outMessage, $messages);
     }
@@ -115,10 +119,10 @@ class RegisterTest extends TestCase
         ];
     }
 
+    // 会員登録処理
     public function testUserRegister()
     {
-        $response = $this->get('/register');
-        $response->assertStatus(200);
+        $this->get('/register')->assertStatus(200);
 
         $data = [
             'name' => 'aaa',
@@ -127,7 +131,6 @@ class RegisterTest extends TestCase
             'password_confirmation' => '12345678'
         ];
         $response = $this->postJson(route('store'), $data);
-
         $response->assertViewIs('auth_induction');
         $response->assertStatus(200);
 

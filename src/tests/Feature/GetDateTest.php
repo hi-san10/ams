@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use Carbon\CarbonImmutable;
@@ -16,11 +15,14 @@ class GetDateTest extends TestCase
      *
      * @return void
      */
+
+    //  勤怠打刻画面日時確認
     public function testGetDate()
     {
         $user = User::factory()->create();
         $this->get('/login');
-        $response = $this->post(url('/login'), ['email' => $user->email, 'password' => '11111111']);
+        $this->post(url('/login'), ['email' => $user->email, 'password' => '11111111']);
+
         $response = $this->get('/attendance');
         $this->assertAuthenticatedAs($user);
 

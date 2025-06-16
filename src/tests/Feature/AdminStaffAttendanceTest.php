@@ -26,7 +26,7 @@ class AdminStaffAttendanceTest extends TestCase
         $admin = AdminUser::find(1);
 
         $this->get('/login')->assertStatus(200);
-        $this->postJson('/admin/login', ['email' => $admin->email, 'password' => '11111111']);
+        $this->postJson('/admin/login', ['email' => $admin->email, 'password' => '00000000']);
         $this->assertTrue(Auth::guard('admins')->check());
     }
 
@@ -83,7 +83,6 @@ class AdminStaffAttendanceTest extends TestCase
         $this->seed(AttendancesTableSeeder::class);
         $this->seed(RestsTableSeeder::class);
         $user = User::find(1);
-        $carbon = new CarbonImmutable();
 
         $attendances = Attendance::with('rests')->whereMonth('date', $month)->get();
         foreach ($attendances as $attendance) {

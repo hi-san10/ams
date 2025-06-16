@@ -28,6 +28,8 @@ class WorkEndTest extends TestCase
      *
      * @return void
      */
+
+    //  退勤処理
     public function testWorkOut()
     {
         $this->get('/attendance')->assertStatus(200);
@@ -38,18 +40,22 @@ class WorkEndTest extends TestCase
         $user = Attendance::where('user_id', $user_id->id)->where('date', $carbon)->first();
         $workEnd = $user->end_time;
         $rest = null;
+
         $view = $this->view('attendances.attendance', ['carbon' => $carbon, 'user' => $user, 'workEnd' => $workEnd,  'rest' => $rest]);
         $view->assertSee('退勤');
 
         $this->get('/attendance/end')->assertStatus(302);
+
         $user_id = User::find(1);
         $user = Attendance::where('user_id', $user_id->id)->where('date', $carbon)->first();
         $workEnd = $user->end_time;
         $rest = null;
+
         $view = $this->view('attendances.attendance', ['carbon' => $carbon, 'user' => $user, 'workEnd' => $workEnd,  'rest' => $rest]);
         $view->assertSee('退勤済');
     }
 
+    // 退勤処理後時刻確認
     public function testAttendanceList()
     {
         $this->get('/attendance')->assertStatus(200);

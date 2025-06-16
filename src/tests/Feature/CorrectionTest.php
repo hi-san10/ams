@@ -142,7 +142,7 @@ class CorrectionTest extends TestCase
         $admin = AdminUser::find(1);
 
         $this->get('/login')->assertStatus(200);
-        $this->post(url('/admin/login'), ['email' => $admin->email, 'password' => '11111111']);
+        $this->post(url('/admin/login'), ['email' => $admin->email, 'password' => '00000000']);
         $this->assertTrue(Auth::guard('admins')->check());
 
         $correction = StampCorrectionRequest::with('user')->where('attendance_id', $attendance->id)->first();

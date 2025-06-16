@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Attendance;
 use App\Models\CorrectionAttendance;
 use App\Models\CorrectionRest;
 use App\Models\Rest;
 use App\Models\StampCorrectionRequest;
-use Carbon\CarbonImmutable;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\CarbonImmutable;
 
 class AttendanceController extends Controller
 {

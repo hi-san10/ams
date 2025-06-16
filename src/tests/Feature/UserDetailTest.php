@@ -48,9 +48,8 @@ class UserDetailTest extends TestCase
     // 日付表示
     public function testDetailDate()
     {
-        $user = User::find(1);
         $carbon = new CarbonImmutable();
-        $attendance = Attendance::where('user_id', $user->id)->where('date', $carbon)->first();
+        $attendance = Attendance::where('date', $carbon)->first();
 
         $this->get(route('attendance_detail', ['id' => $attendance->id]))
             ->assertSee($attendance->date->format('m').'月'.$attendance->date->format('d').'日');

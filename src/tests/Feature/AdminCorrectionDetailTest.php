@@ -26,7 +26,7 @@ class AdminCorrectionDetailTest extends TestCase
         $admin = AdminUser::find(1);
 
         $this->get('/login')->assertStatus(200);
-        $this->postJson('/admin/login', ['email' => $admin->email, 'password' => '11111111']);
+        $this->postJson('/admin/login', ['email' => $admin->email, 'password' => '00000000']);
         $this->assertTrue(Auth::guard('admins')->check());
     }
 

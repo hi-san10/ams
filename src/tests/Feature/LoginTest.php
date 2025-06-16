@@ -10,21 +10,40 @@ use Illuminate\Support\Facades\Validator;
 class LoginTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function setUp() :void
+    {
+        parent::setUp();
+
+        $this->get('/register')->assertStatus(200);
+
+        $data = [
+            'name' => 'aaa',
+            'email' => 'aaaa@example.com',
+            'password' => '12345678',
+            'password_confirmation' => '12345678'
+        ];
+        $this->postJson(route('store'), $data);
+    }
     /**
      * A basic feature test example.
      *@dataProvider validationProvider
      * @return void
      */
+
+    //  ログイン画面バリデーション
     public function testLoginValidation($inData, $outFail, $outMessage)
     {
-        $response = $this->get('/login');
-        $response->assertStatus(200);
+        $this->get('/login')->assertStatus(200);
+
         $request = new LoginRequest();
         $rules = $request->rules();
         $messages = $request->messages();
+
         $validator = Validator::make($inData, $rules, $messages);
         $result = $validator->fails();
         $this->assertEquals($outFail, $result);
+
         $messages = $validator->errors()->getMessages();
         $this->assertEquals($outMessage, $messages);
     }
@@ -56,13 +75,13 @@ class LoginTest extends TestCase
         ];
     }
 
+    // 登録情報と異なるメールアドレスでログイン
     public function testUnRegistered()
     {
-        $response = $this->get('/login');
-        $response->assertStatus(200);
+        $this->get('/login')->assertStatus(200);
 
         $data = [
-            'email' => 'aaaa@example.com',
+            'email' => 'bbbb@example.com',
             'password' => '12345678'
         ];
         $response = $this->postJson(url('/login'), $data);

@@ -3,19 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdminUser;
-use Carbon\CarbonImmutable;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Attendance;
 use App\Models\Rest;
 use App\Models\StampCorrectionRequest;
 use App\Models\CorrectionAttendance;
-use App\Models\CorrectionRest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\CorrectionRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
+use Carbon\CarbonImmutable;
 
 class AdminController extends Controller
 {

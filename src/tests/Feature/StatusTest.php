@@ -31,6 +31,8 @@ class StatusTest extends TestCase
      * @dataProvider statusProvider
      * @return void
      */
+
+    //  勤怠状態によってのステータス確認
     public function testStatus($user, $rest, $workEnd, $result)
     {
         $carbon = new CarbonImmutable();
