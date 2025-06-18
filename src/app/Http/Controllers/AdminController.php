@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AdminUser;
 use App\Models\User;
+use App\Models\AdminUser;
 use App\Models\Attendance;
 use App\Models\Rest;
 use App\Models\StampCorrectionRequest;
 use App\Models\CorrectionAttendance;
+use App\Models\CorrectionRest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\CorrectionRequest;
 use Illuminate\Http\Request;
@@ -152,13 +153,17 @@ class AdminController extends Controller
         $rests = $attendance->rests;
         foreach($rests as $rest)
         {
-            Rest::find($rest->id)->delete();
+        Rest::where('id', $rest->id)->delete();
         }
 
-        $correctionRests = $attendance->rests;
+        $correctionRests = CorrectionRest::where('correction_attendance_id', $correctionAttendance->id)->get();
         foreach($correctionRests as $rest)
         {
-            Rest::create(['attendance_id' => $attendance->id, 'start_time' => $rest->start_time, 'end_time' => $rest->end_time]);
+            $newRest = new Rest;
+            $newRest->attendance_id = $attendance->id;
+            $newRest->save();
+            $newRest->start_time = $rest->start_time;
+            $newRest->end_time = $rest->end_time;
         }
 
         return redirect()->route('approval_detail', ['attendance_correct_request' => $request->id]);
