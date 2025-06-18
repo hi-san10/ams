@@ -161,9 +161,9 @@ class AdminController extends Controller
         {
             $newRest = new Rest;
             $newRest->attendance_id = $attendance->id;
-            $newRest->save();
             $newRest->start_time = $rest->start_time;
             $newRest->end_time = $rest->end_time;
+            $newRest->save();
         }
 
         return redirect()->route('approval_detail', ['attendance_correct_request' => $request->id]);

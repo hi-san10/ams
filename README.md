@@ -18,7 +18,7 @@
 
 2. composer install
 
-3. env.example ファイルから .env を作成し、環境変数を変更
+3. env.example ファイルから .env を作成し、docker-compose.ymlに応じて環境変数を変更
 
     ・開発環境ではMailtrapサービスを使ってメール機能を開発しています
 
