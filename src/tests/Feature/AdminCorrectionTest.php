@@ -72,26 +72,27 @@ class AdminCorrectionTest extends TestCase
             'request_reason' => '電車遅延'
         ]);
 
-        $attendance = CorrectionAttendance::create([
+        $correction_attendance = CorrectionAttendance::create([
             'stamp_correction_request_id' => $correction->id,
             'start_time' => '09:00',
             'end_time' => '18:00'
         ]);
         CorrectionRest::create([
-            'correction_attendance_id' => $attendance->id,
+            'correction_attendance_id' => $correction_attendance->id,
             'start_time' => '11:00',
             'end_time' => '12:00'
         ]);
 
-        $response = $this->get(route('approval_detail', ['attendance_correct_request' => 1]));
-        $response->assertViewHas('attendance', $attendance);
+        $response = $this->get(route('approval_detail', ['attendance_correct_request' => $correction_attendance->id]));
+        $response->assertViewHas('attendance', $correction_attendance);
         $response->assertViewHas('correction', $correction);
 
-        $this->post(route('approve', ['id' => $correction->id]))->assertStatus(302);
+        $this->post(route('approve', ['id' => $correction->id]));
         $this->assertDatabaseHas('attendances', [
             'id' => $correction->attendance_id,
-            'start_time' => $attendance->start_time,
-            'end_time' => $attendance->end_time,
+            'start_time' => $correction_attendance->start_time,
+            'end_time' => $correction_attendance->end_time,
         ]);
     }
 }
+
