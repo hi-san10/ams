@@ -31,9 +31,21 @@
         <tr>
             <td>{{ $attendance->date->isoFormat('MM/D(ddd)') }}</td>
             <td>{{ substr($attendance->start_time, 0, 5) }}</td>
-            <td>{{ substr($attendance->end_time, 0, 5) }}</td>
-            <td>{{ substr($attendance->totalRest, 0, 5) }}</td>
-            <td>{{ substr($attendance->totalWork, 0, 5) }}</td>
+            <td>
+                @if (is_null($attendance->end_time))
+                @else {{ substr($attendance->end_time, 0, 5) }}
+                @endif
+            </td>
+            <td>
+                @if ($attendance->totalRest == '00:00:00')
+                @else {{ substr($attendance->totalRest, 0, 5) }}
+                @endif
+            </td>
+            <td>
+                @if (is_null($attendance->end_time))
+                @else {{ substr($attendance->totalWork, 0, 5) }}
+                @endif
+            </td>
             <td><a href="{{ route('attendance_detail', ['id' => $attendance->id]) }}" class="detail">詳細</a></td>
         </tr>
         @endforeach
