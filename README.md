@@ -68,7 +68,7 @@
 
 ## テーブル仕様書
 
-![Image](https://github.com/user-attachments/assets/b99f8ba1-de6b-46d2-b4cc-a039503efced)
+![Image](https://github.com/user-attachments/assets/849b7365-c72a-43b7-a5e9-3dbedc692991)
 
 ![Image](https://github.com/user-attachments/assets/700867ca-dbd5-444d-b186-6b6d93e4649d)
 
