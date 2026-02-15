@@ -29,11 +29,9 @@ class CorrectionAttendanceController extends Controller
             'end_time' => $request->end,
         ]);
 
-        if (!is_null($request->rest_start))
-        {
+        if (!is_null($request->rest_start)) {
             $rest_starts = $request->rest_start;
-            foreach($rest_starts as $rest_start)
-            {
+            foreach($rest_starts as $rest_start) {
                 $rest = CorrectionRest::create([
                     'correction_attendance_id' => $correction_attendance->id,
                     'start_time' => $rest_start,
@@ -41,8 +39,7 @@ class CorrectionAttendanceController extends Controller
             }
 
             $rest_ends = $request->rest_end;
-            foreach($rest_ends as $rest_end)
-            {
+            foreach($rest_ends as $rest_end) {
                 $end_time = new CorrectionRest;
                 $end_time = CorrectionRest::where('correction_attendance_id', $rest->correction_attendance_id)->whereNull('end_time')->first();
                 $end_time->end_time = $rest_end;
@@ -50,8 +47,7 @@ class CorrectionAttendanceController extends Controller
             }
         }
 
-        if (!is_null($request->newRest_start))
-        {
+        if (!is_null($request->newRest_start)) {
             CorrectionRest::create([
                 'correction_attendance_id' => $correction_attendance->id,
                 'start_time' => $request->newRest_start,
@@ -64,28 +60,22 @@ class CorrectionAttendanceController extends Controller
 
     public function list(Request $request)
     {
-        if (Auth::check())
-        {
-            $prm = $request->page;
+        $prm = $request->page;
+        $approval = $prm === 'approved';
 
-            if (is_null($prm))
-            {
-                $correction_requests = StampCorrectionRequest::with('user', 'attendance')->where([['user_id', Auth::id()], ['is_approval', false]])->get();
-            }elseif ($prm == 'approved') {
-                $correction_requests = StampCorrectionRequest::with('user', 'attendance')->where([['user_id', Auth::id()], ['is_approval', true]])->get();
-            }
+        $query = StampCorrectionRequest::with('user', 'attendance')
+        ->where('is_approval', $approval);
+
+        if (Auth::check()) {
+            $correction_requests = $query
+            ->where('user_id', Auth::id())
+            ->get();
 
             return view('request_list', compact('correction_requests', 'prm'));
-        }elseif (Auth::guard('admins')->check())
-        {
-            $prm = $request->page;
 
-            if (is_null($prm))
-            {
-                $correction_requests = StampCorrectionRequest::with('user', 'attendance')->where('is_approval', false)->get();
-            }elseif ($prm == 'approved') {
-                $correction_requests = StampCorrectionRequest::with('user', 'attendance')->where('is_approval', true)->get();
-            }
+        } elseif (Auth::guard('admins')->check()) {
+            $correction_requests = $query
+            ->get();
 
             return view('admins.request_list', compact('correction_requests', 'prm'));
         }
