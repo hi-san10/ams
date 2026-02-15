@@ -13,10 +13,8 @@ use Illuminate\Support\Facades\Auth;
 
 class CorrectionAttendanceController extends Controller
 {
-    public function correction(CorrectionRequest $request)
+    public function correction(CorrectionRequest $request, Attendance $attendance)
     {
-        $attendance = Attendance::where('id', $request->id)->first();
-
         $correction = StampCorrectionRequest::create([
             'user_id' => Auth::id(),
             'attendance_id' => $attendance->id,
@@ -31,7 +29,7 @@ class CorrectionAttendanceController extends Controller
             'end_time' => $request->end,
         ]);
 
-        if ($request->rest_start)
+        if (!is_null($request->rest_start))
         {
             $rest_starts = $request->rest_start;
             foreach($rest_starts as $rest_start)
@@ -52,7 +50,7 @@ class CorrectionAttendanceController extends Controller
             }
         }
 
-        if ($request->newRest_start)
+        if (!is_null($request->newRest_start))
         {
             CorrectionRest::create([
                 'correction_attendance_id' => $correction_attendance->id,
