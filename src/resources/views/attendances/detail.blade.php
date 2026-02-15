@@ -17,7 +17,7 @@
     <div class="detail-title">
         <h1 class="title-text">勤怠詳細</h1>
     </div>
-    <form action="@if(Auth::check()){{ route('correction', ['id' => $attendance->id]) }}
+    <form action="@if(Auth::check()){{ route('correction', ['attendance' => $attendance->id]) }}
         @else{{ route('admin_correction', ['id' => $attendance->id]) }}
         @endif" method="post" class="detail__form">
         @csrf
