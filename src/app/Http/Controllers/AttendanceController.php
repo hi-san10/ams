@@ -10,9 +10,17 @@ use App\Models\StampCorrectionRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\CarbonImmutable;
+use App\Services\AttendanceService;
 
 class AttendanceController extends Controller
 {
+    protected $attendanceService;
+
+    public function __construct(AttendanceService $attendanceService)
+    {
+        $this->attendanceService = $attendanceService;
+    }
+
     public function index()
     {
         $carbon = new CarbonImmutable;
@@ -56,9 +64,7 @@ class AttendanceController extends Controller
     public function list(Request $request)
     {
         $baseDate = $request->month;
-
-        if (is_null($baseDate))
-        {
+        if (is_null($baseDate)) {
             $carbon = CarbonImmutable::today();
         } else {
             $carbon = new CarbonImmutable($baseDate);
@@ -66,25 +72,7 @@ class AttendanceController extends Controller
         $previousMonth = $carbon->subMonthNoOverflow(1);
         $nextMonth = $carbon->addMonthNoOverflow(1);
 
-        $attendances = Attendance::with('rests')->where('user_id', Auth::id())->whereYear('date', $carbon)->whereMonth('date', $carbon)
-            ->orderBy('date', 'asc')->get();
-        foreach ($attendances as $index => $attendance) {
-            $start = new CarbonImmutable($attendance->start_time);
-            $end = new CarbonImmutable($attendance->end_time);
-            $workingTime = $start->diffInSeconds($end);
-
-            $rests = $attendance->rests;
-            $number = 0;
-            foreach ($rests as $rest) {
-                $restStart = new CarbonImmutable($rest->start_time);
-                $restEnd = new CarbonImmutable($rest->end_time);
-                $diffRest = $restStart->diffInSeconds($restEnd);
-                $number = $number + $diffRest;
-            }
-
-            $attendance->totalRest = gmdate('H:i:s', $number);
-            $attendance->totalWork = gmdate('H:i:s', $workingTime - $number);
-        }
+        $attendances = $this->attendanceService->attendanceList(Auth::id(), $carbon);
 
         return view('attendances.list', compact('attendances', 'carbon', 'previousMonth', 'nextMonth'));
     }
