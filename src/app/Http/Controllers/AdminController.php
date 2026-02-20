@@ -28,8 +28,10 @@ class AdminController extends Controller
     {
         $admin = AdminUser::where('email', $request->email)->first();
 
-        if (is_null($admin) or $admin && !Hash::check($request->password, $admin->password)) {
-            return back()->with('message', 'ログイン情報が登録されていません');
+        if (!$admin || !Hash::check($request->password, $admin->password)) {
+            return back()
+                ->with('message', 'ログイン情報が登録されていません')
+                ->withInput();
         }
 
         $credentials = [
