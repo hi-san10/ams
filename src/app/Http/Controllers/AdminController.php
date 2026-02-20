@@ -28,9 +28,10 @@ class AdminController extends Controller
     {
         $admin = AdminUser::where('email', $request->email)->first();
 
-        if (is_null($admin) or $admin && !Hash::check($request->password, $admin->password))
-        {
-            return back()->with('message', 'ログイン情報が登録されていません');
+        if (!$admin || !Hash::check($request->password, $admin->password)) {
+            return back()
+                ->with('message', 'ログイン情報が登録されていません')
+                ->withInput();
         }
 
         $credentials = [
@@ -58,16 +59,14 @@ class AdminController extends Controller
         $nextDay = new CarbonImmutable($carbon->addDay(1));
 
         $attendances = Attendance::with('user', 'rests')->whereDate('date', $carbon)->get();
-        foreach ($attendances as $attendance)
-        {
+        foreach ($attendances as $attendance) {
             $start = new CarbonImmutable($attendance->start_time);
             $end = new CarbonImmutable($attendance->end_time);
             $workingTime = $start->diffInSeconds($end);
 
             $rests = $attendance->rests;
             $number = 0;
-            foreach ($rests as $rest)
-            {
+            foreach ($rests as $rest) {
                 $restStart = new CarbonImmutable($rest->start_time);
                 $restEnd = new CarbonImmutable($rest->end_time);
                 $diffRest = $restStart->diffInSeconds($restEnd);
@@ -132,8 +131,7 @@ class AdminController extends Controller
     {
         $request_id = $request->attendance_correct_request;
         $correction = StampCorrectionRequest::with('user')->where('id', $request_id)->first();
-        if ($correction->is_approval == false)
-        {
+        if ($correction->is_approval == false) {
             $attendance = CorrectionAttendance::with('rests')->where('stamp_correction_request_id', $request_id)->first();
         }else{
             $attendance = Attendance::with('rests')->where('id', $correction->attendance_id)->first();
@@ -151,14 +149,12 @@ class AdminController extends Controller
         $attendance->update(['start_time' => $correctionAttendance->start_time, 'end_time' => $correctionAttendance->end_time]);
 
         $rests = $attendance->rests;
-        foreach($rests as $rest)
-        {
-        Rest::where('id', $rest->id)->delete();
+        foreach ($rests as $rest) {
+            Rest::where('id', $rest->id)->delete();
         }
 
         $correctionRests = CorrectionRest::where('correction_attendance_id', $correctionAttendance->id)->get();
-        foreach($correctionRests as $rest)
-        {
+        foreach ($correctionRests as $rest) {
             $newRest = new Rest;
             $newRest->attendance_id = $attendance->id;
             $newRest->start_time = $rest->start_time;
@@ -175,16 +171,13 @@ class AdminController extends Controller
         $attendance->update(['start_time' => $request->start, 'end_time' => $request->end]);
 
         $rests = Rest::where('attendance_id', $request->id)->get();
-        if($rests)
-        {
+        if ($rests) {
             Rest::destroy($rests);
         }
 
-        if($request->rest_start)
-        {
+        if ($request->rest_start) {
             $rest_starts = $request->rest_start;
-            foreach($rest_starts as $rest_start)
-            {
+            foreach ($rest_starts as $rest_start) {
                 $rest = new Rest;
                 $rest->attendance_id = $attendance->id;
                 $rest->start_time = $rest_start;
@@ -192,16 +185,14 @@ class AdminController extends Controller
             }
 
             $rest_end = $request->rest_end;
-            foreach($rest_end as $rest_end)
-            {
+            foreach ($rest_end as $rest_end) {
                 $rest = Rest::where('attendance_id', $attendance->id)->whereNull('end_time')->first();
                 $rest->end_time = $rest_end;
                 $rest->save();
             }
         }
 
-        if ($request->newRest_start)
-        {
+        if ($request->newRest_start) {
             Rest::create([
                 'attendance_id' => $attendance->id,
                 'start_time' => $request->newRest_start,
@@ -209,13 +200,12 @@ class AdminController extends Controller
         }
 
         $stamp_correction_request = StampCorrectionRequest::where('attendance_id', $attendance->id)->first();
-        if ($stamp_correction_request)
-        {
+        if ($stamp_correction_request) {
             $stamp_correction_request->update([
                 'is_approval' => true,
                 'request_date' => CarbonImmutable::today(),
                 'request_reason' => $request->remarks]);
-        }else{
+        } else {
             StampCorrectionRequest::create([
                 'user_id' => $attendance->user->id,
                 'attendance_id' => $attendance->id,
@@ -238,15 +228,13 @@ class AdminController extends Controller
         $temps = [];
         array_push($temps, $head);
 
-        foreach($attendances as $attendance)
-        {
+        foreach ($attendances as $attendance) {
             $start = new CarbonImmutable($attendance->start_time);
             $end = new CarbonImmutable($attendance->end_time);
             $workingTime = $start->diffInSeconds($end);
 
             $number = 0;
-            foreach($attendance->rests as $rest)
-            {
+            foreach ($attendance->rests as $rest) {
                 $restStart = new CarbonImmutable($rest->start_time);
                 $restEnd = new CarbonImmutable($rest->end_time);
                 $diffRest = $restStart->diffInSeconds($restEnd);
@@ -266,8 +254,7 @@ class AdminController extends Controller
         }
 
         $f = fopen('php://temp', 'r+b');
-        foreach($temps as $temp)
-        {
+        foreach ($temps as $temp) {
             fputcsv($f, $temp);
         }
 
