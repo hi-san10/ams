@@ -15,6 +15,12 @@ class CorrectionAttendance extends Model
         'end_time',
     ];
 
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime'
+    ];
+
+
     public function rests()
     {
         return $this->hasMany(CorrectionRest::class);

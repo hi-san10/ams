@@ -53,9 +53,9 @@
             @endif
             <tr>
                 <th>出勤・退勤</th>
-                <td><input type="text" class="attendance-time" name="start" value="{{ old('start', substr($attendance->start_time, 0, 5)) }}"></td>
+                <td><input type="text" class="attendance-time" name="start" value="{{ old('start', $attendance->start_time->format('H:i')) }}"></td>
                 <td>~</td>
-                <td><input type="text" class="attendance-time" name="end" value="{{ old('end', substr($attendance->end_time, 0, 5)) }}"></td>
+                <td><input type="text" class="attendance-time" name="end" value="{{ old('end', $attendance->end_time->format('H:i')) }}"></td>
             </tr>
             @if ($errors->has('start') or $errors->has('end'))
             <tr>
@@ -70,9 +70,9 @@
             @foreach($attendance->rests as $index => $rest)
             <tr>
                 <th>休憩</th>
-                <td><input type="text" class="attendance-time" name="rest_start[{{ $index }}]" value="{{ old('rest_start.'.$index, substr($rest->start_time, 0, 5)) }}"></td>
+                <td><input type="text" class="attendance-time" name="rest_start[{{ $index }}]" value="{{ old('rest_start.'.$index, $rest->start_time->format('H:i')) }}"></td>
                 <td>~</td>
-                <td><input type="text" class="attendance-time" name="rest_end[{{ $index }}]" value="{{ old('rest_end.'.$index, substr($rest->end_time, 0, 5)) }}"></td>
+                <td><input type="text" class="attendance-time" name="rest_end[{{ $index }}]" value="{{ old('rest_end.'.$index, $rest->end_time->format('H:i')) }}"></td>
             </tr>
             @if ($errors->has('rest_start.*') or $errors->has('rest_end.*'))
             <tr>
