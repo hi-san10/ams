@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Carbon\CarbonImmutable;
 use App\Models\Attendance;
 
 class AttendanceService
@@ -17,15 +16,15 @@ class AttendanceService
         ->get();
 
         foreach ($attendances as $index => $attendance) {
-            $start = new CarbonImmutable($attendance->start_time);
-            $end = new CarbonImmutable($attendance->end_time);
+            $start = $attendance->start_time;
+            $end = $attendance->end_time;
             $workingTime = $start->diffInSeconds($end);
 
             $rests = $attendance->rests;
             $number = 0;
             foreach ($rests as $rest) {
-                $restStart = new CarbonImmutable($rest->start_time);
-                $restEnd = new CarbonImmutable($rest->end_time);
+                $restStart = $rest->start_time;
+                $restEnd = $rest->end_time;
                 $diffRest = $restStart->diffInSeconds($restEnd);
                 $number = $number + $diffRest;
             }

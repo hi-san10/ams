@@ -30,18 +30,18 @@
             </tr>
             <tr>
                 <th>出勤・退勤</th>
-                <td><input type="text" class="attendance-time" value="{{ substr($attendance->start_time, 0, 5) }}" readonly></td>
+                <td><input type="text" class="attendance-time" value="{{ $attendance->start_time->format('H:i') }}" readonly></td>
                 <td>~</td>
-                <td><input type="text" class="attendance-time" value="{{ substr($attendance->end_time, 0, 5) }}" readonly></td>
+                <td><input type="text" class="attendance-time" value="{{ $attendance->end_time->format('H:i') }}" readonly></td>
             </tr>
             @if ($attendance->rests)
             @php $i=1; @endphp
             @foreach($attendance->rests as $index => $rest)
             <tr>
                 <th>休憩@if ($index == 0) @else {{ $index+1 }} @endif</th>
-                <td><input type="text" class="attendance-time" name="rest_start[{{ $index }}]" value="{{ substr($rest->start_time, 0, 5) }}" readonly></td>
+                <td><input type="text" class="attendance-time" name="rest_start[{{ $index }}]" value="{{ $rest->start_time->format('H:i') }}" readonly></td>
                 <td>~</td>
-                <td><input type="text" class="attendance-time" name="rest_end[{{ $index }}]" value="{{ substr($rest->end_time, 0, 5) }}" readonly></td>
+                <td><input type="text" class="attendance-time" name="rest_end[{{ $index }}]" value="{{ $rest->end_time->format('H:i') }}" readonly></td>
             </tr>
             @endforeach
             @endif
