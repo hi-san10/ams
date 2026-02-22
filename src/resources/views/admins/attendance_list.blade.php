@@ -37,13 +37,13 @@
                 @endif
             </td>
             <td>
-                @if ($attendance->totalRest == '00:00:00')
-                @else {{ substr($attendance->totalRest, 0, 5) }}
+                @if ($attendance->total_rest_time == '00:00:00')
+                @else {{ substr($attendance->total_rest_time, 0, 5) }}
                 @endif
             </td>
             <td>
                 @if (is_null($attendance->end_time))
-                @else {{ substr($attendance->totalWork, 0, 5) }}
+                @else {{ substr($attendance->total_work_time, 0, 5) }}
                 @endif
             </td>
             <td><a href="{{ route('attendance_detail', ['id' => $attendance->id]) }}" class="detail">詳細</a></td>
