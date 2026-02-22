@@ -16,9 +16,17 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
 use Carbon\CarbonImmutable;
+use App\Services\AdminAttendanceService;
 
 class AdminController extends Controller
 {
+    protected $adminAttendanceService;
+
+    public function __construct(AdminAttendanceService $adminAttendanceService)
+    {
+        $this->adminAttendanceService = $adminAttendanceService;
+    }
+
     public function getLogin(Request $request)
     {
         return view('admins.admin_login');
@@ -48,37 +56,15 @@ class AdminController extends Controller
     public function list(Request $request)
     {
         $baseDate = $request->day;
-
         if (is_null($baseDate)) {
             $carbon = CarbonImmutable::today();
         } else {
             $carbon = new CarbonImmutable($baseDate);
         }
+        $previousDay = $carbon->subDay(1);
+        $nextDay = $carbon->addDay(1);
 
-        $previousDay = new CarbonImmutable($carbon->subDay(1));
-        $nextDay = new CarbonImmutable($carbon->addDay(1));
-
-        $attendances = Attendance::with('user', 'rests')->whereDate('date', $carbon)->get();
-        foreach ($attendances as $attendance) {
-            $start = new CarbonImmutable($attendance->start_time);
-            $end = new CarbonImmutable($attendance->end_time);
-            $workingTime = $start->diffInSeconds($end);
-
-            $rests = $attendance->rests;
-            $number = 0;
-            foreach ($rests as $rest) {
-                $restStart = new CarbonImmutable($rest->start_time);
-                $restEnd = new CarbonImmutable($rest->end_time);
-                $diffRest = $restStart->diffInSeconds($restEnd);
-                $number = $number + $diffRest;
-
-                $attendance->is_rest = $rest->end_time;
-            }
-
-            $attendance->totalRest = gmdate('H:i:s', $number);
-            $attendance->totalWork = gmdate('H:i:s', $workingTime - $number);
-
-        }
+        $attendances = $this->adminAttendanceService->attendanceList($carbon);
 
         return view('admins.attendance_list', compact('carbon', 'attendances', 'previousDay', 'nextDay'));
     }
