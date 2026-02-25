@@ -16,15 +16,15 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
 use Carbon\CarbonImmutable;
-use App\Services\AdminAttendanceService;
+use App\Services\AttendanceService;
 
 class AdminController extends Controller
 {
-    protected $adminAttendanceService;
+    protected $attendanceService;
 
-    public function __construct(AdminAttendanceService $adminAttendanceService)
+    public function __construct(AttendanceService $attendanceService)
     {
-        $this->adminAttendanceService = $adminAttendanceService;
+        $this->attendanceService = $attendanceService;
     }
 
     public function getLogin(Request $request)
@@ -64,7 +64,10 @@ class AdminController extends Controller
         $previousDay = $carbon->subDay(1);
         $nextDay = $carbon->addDay(1);
 
-        $attendances = $this->adminAttendanceService->attendanceList($carbon);
+        $allAttendances = Attendance::with('user', 'rests')
+            ->whereDate('date', $carbon)
+            ->get();
+        $attendances = $this->attendanceService->calculate($allAttendances);
 
         return view('admins.attendance_list', compact('carbon', 'attendances', 'previousDay', 'nextDay'));
     }
@@ -79,21 +82,24 @@ class AdminController extends Controller
     public function staff_attendance_list(Request $request)
     {
         $baseDate = $request->month;
-        $user = User::where('id', $request->id)
-            ->select('id', 'name')
-            ->first();
-        $userId = $user->id;
-
         if (is_null($baseDate)) {
             $carbon = CarbonImmutable::today();
         } else {
             $carbon = new CarbonImmutable($baseDate);
         }
-
         $previousMonth = $carbon->subMonthNoOverflow(1);
         $nextMonth = $carbon->addMonthNoOverflow(1);
 
-        $attendances = $this->adminAttendanceService->staffAttendanceList($userId, $carbon);
+
+        $user = User::where('id', $request->id)
+                ->select('id', 'name')
+                ->first();
+        $userMonthlyAttendances = Attendance::with('user', 'rests')
+            ->where('user_id', $user->id)
+            ->whereYear('date', $carbon)
+            ->whereMonth('date', $carbon)
+            ->get();
+        $attendances = $this->attendanceService->calculate($userMonthlyAttendances);
 
         return view('admins.staff_attendance_list', compact('attendances', 'carbon', 'previousMonth', 'nextMonth', 'user'));
     }
