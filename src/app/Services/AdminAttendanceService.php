@@ -6,6 +6,13 @@ use App\Models\Attendance;
 
 class AdminAttendanceService
 {
+    protected $attendanceService;
+
+    public function __construct(AttendanceService $attendanceService)
+    {
+        $this->attendanceService = $attendanceService;
+    }
+
     public function attendanceList($carbon)
     {
         $attendances = Attendance::with('user', 'rests')
@@ -33,6 +40,13 @@ class AdminAttendanceService
             $attendance->total_rest_time = gmdate('H:i:s', $totalRestSeconds);
             $attendance->total_work_time = gmdate('H:i:s', $workingSeconds - $totalRestSeconds);
         }
+
+        return $attendances;
+    }
+
+    public function staffAttendanceList($userId, $carbon)
+    {
+        $attendances = $this->attendanceService->attendanceList($userId, $carbon);
 
         return $attendances;
     }
