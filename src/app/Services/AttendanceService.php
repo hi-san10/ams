@@ -2,35 +2,20 @@
 
 namespace App\Services;
 
-use App\Models\Attendance;
-
 class AttendanceService
 {
-    public function attendanceList($authId, $carbon)
+    public function calculate($attendances)
     {
-        $attendances = Attendance::with('rests')
-        ->where('user_id', $authId)
-        ->whereYear('date', $carbon)
-        ->whereMonth('date', $carbon)
-        ->orderBy('date', 'asc')
-        ->get();
-
-        foreach ($attendances as $index => $attendance) {
-            $start = $attendance->start_time;
-            $end = $attendance->end_time;
-            $workingTime = $start->diffInSeconds($end);
+        foreach ($attendances as $attendance) {
+            $workingTime = $attendance->start_time->diffInSeconds($attendance->end_time);
 
             $rests = $attendance->rests;
-            $number = 0;
-            foreach ($rests as $rest) {
-                $restStart = $rest->start_time;
-                $restEnd = $rest->end_time;
-                $diffRest = $restStart->diffInSeconds($restEnd);
-                $number = $number + $diffRest;
-            }
+            $totalRestSeconds = $rests->sum(function ($rest) {
+                return $rest->start_time->diffInSeconds($rest->end_time);
+            });
 
-            $attendance->totalRest = gmdate('H:i:s', $number);
-            $attendance->totalWork = gmdate('H:i:s', $workingTime - $number);
+            $attendance->total_rest_time = gmdate('H:i:s', $totalRestSeconds);
+            $attendance->total_work_time = gmdate('H:i:s', $workingTime - $totalRestSeconds);
         }
 
         return $attendances;

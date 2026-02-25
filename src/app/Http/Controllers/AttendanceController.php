@@ -72,7 +72,13 @@ class AttendanceController extends Controller
         $previousMonth = $carbon->subMonthNoOverflow(1);
         $nextMonth = $carbon->addMonthNoOverflow(1);
 
-        $attendances = $this->attendanceService->attendanceList(Auth::id(), $carbon);
+        $monthlyAttendances = Attendance::with('rests')
+            ->where('user_id', Auth::id())
+            ->whereYear('date', $carbon)
+            ->whereMonth('date', $carbon)
+            ->orderBy('date', 'asc')
+            ->get();
+        $attendances = $this->attendanceService->calculate($monthlyAttendances);
 
         return view('attendances.list', compact('attendances', 'carbon', 'previousMonth', 'nextMonth'));
     }
