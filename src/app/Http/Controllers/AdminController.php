@@ -79,7 +79,10 @@ class AdminController extends Controller
     public function staff_attendance_list(Request $request)
     {
         $baseDate = $request->month;
-        $user = User::where('id', $request->id)->select('id', 'name')->first();
+        $user = User::where('id', $request->id)
+            ->select('id', 'name')
+            ->first();
+        $userId = $user->id;
 
         if (is_null($baseDate)) {
             $carbon = CarbonImmutable::today();
@@ -90,25 +93,7 @@ class AdminController extends Controller
         $previousMonth = $carbon->subMonthNoOverflow(1);
         $nextMonth = $carbon->addMonthNoOverflow(1);
 
-        $attendances = Attendance::with('rests')->where('user_id', $user->id)->whereYear('date', $carbon)->whereMonth('date', $carbon)
-            ->orderBy('date', 'asc')->get();
-        foreach ($attendances as $attendance) {
-            $start = new CarbonImmutable($attendance->start_time);
-            $end = new CarbonImmutable($attendance->end_time);
-            $workingTime = $start->diffInSeconds($end);
-
-            $rests = $attendance->rests;
-            $number = 0;
-            foreach ($rests as $rest) {
-                $restStart = new CarbonImmutable($rest->start_time);
-                $restEnd = new CarbonImmutable($rest->end_time);
-                $diffRest = $restStart->diffInSeconds($restEnd);
-                $number = $number + $diffRest;
-            }
-
-            $attendance->totalRest = gmdate('H:i:s', $number);
-            $attendance->totalWork = gmdate('H:i:s', $workingTime - $number);
-        }
+        $attendances = $this->adminAttendanceService->staffAttendanceList($userId, $carbon);
 
         return view('admins.staff_attendance_list', compact('attendances', 'carbon', 'previousMonth', 'nextMonth', 'user'));
     }
