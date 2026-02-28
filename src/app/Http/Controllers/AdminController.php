@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\DB;
 use Carbon\CarbonImmutable;
 use App\Services\AttendanceService;
 
@@ -126,25 +127,24 @@ class AdminController extends Controller
     public function approve(Request $request)
     {
         $stamp_correction_request = StampCorrectionRequest::where('id', $request->id)->first();
-        $stamp_correction_request->update(['is_approval' => true]);
-
-        $correctionAttendance = CorrectionAttendance::where('stamp_correction_request_id', $stamp_correction_request->id)->first();
+        $correctionAttendance = CorrectionAttendance::with('rests')->where('stamp_correction_request_id', $stamp_correction_request->id)->first();
         $attendance = Attendance::with('rests')->where('id', $stamp_correction_request->attendance_id)->first();
-        $attendance->update(['start_time' => $correctionAttendance->start_time, 'end_time' => $correctionAttendance->end_time]);
-
-        $rests = $attendance->rests;
-        foreach ($rests as $rest) {
-            Rest::where('id', $rest->id)->delete();
-        }
-
-        $correctionRests = CorrectionRest::where('correction_attendance_id', $correctionAttendance->id)->get();
-        foreach ($correctionRests as $rest) {
-            $newRest = new Rest;
-            $newRest->attendance_id = $attendance->id;
-            $newRest->start_time = $rest->start_time;
-            $newRest->end_time = $rest->end_time;
-            $newRest->save();
-        }
+        DB::transaction(function () use(
+            $stamp_correction_request,
+            $correctionAttendance,
+            $attendance,
+        ) {
+            $stamp_correction_request->update(['is_approval' => true]);
+            $attendance->update(['start_time' => $correctionAttendance->start_time, 'end_time' => $correctionAttendance->end_time]);
+            $attendance->rests()->delete();
+            $attendance->rests()->createMany(
+                $correctionAttendance->rests
+                    ->map(fn ($rest) => [
+                        'start_time' => $rest->start_time,
+                        'end_time' => $rest->end_time,
+                    ])
+                    ->toArray());
+        });
 
         return redirect()->route('approval_detail', ['attendance_correct_request' => $request->id]);
     }
