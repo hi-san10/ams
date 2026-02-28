@@ -107,12 +107,19 @@ class AdminController extends Controller
     public function approval_detail(Request $request)
     {
         $request_id = $request->attendance_correct_request;
-        $correction = StampCorrectionRequest::with('user')->where('id', $request_id)->first();
+        $correction = StampCorrectionRequest::with('user')
+            ->where('id', $request_id)
+            ->first();
         if ($correction->is_approval == false) {
-            $attendance = CorrectionAttendance::with('rests')->where('stamp_correction_request_id', $request_id)->first();
-        }else{
-            $attendance = Attendance::with('rests')->where('id', $correction->attendance_id)->first();
+            $attendance = CorrectionAttendance::with('rests')
+                ->where('stamp_correction_request_id', $request_id)
+                ->first();
+        } else {
+            $attendance = Attendance::with('rests')
+                ->where('id', $correction->attendance_id)
+                ->first();
         }
+
         return view('admins.approve', compact('correction', 'attendance'));
     }
 
@@ -144,7 +151,9 @@ class AdminController extends Controller
 
     public function correction(CorrectionRequest $request)
     {
-        $attendance = Attendance::with('user')->where('id', $request->id)->first();
+        $attendance = Attendance::with('user')
+            ->where('id', $request->id)
+            ->first();
         $attendance->update(['start_time' => $request->start, 'end_time' => $request->end]);
 
         $rests = Rest::where('attendance_id', $request->id)->get();
@@ -163,7 +172,9 @@ class AdminController extends Controller
 
             $rest_end = $request->rest_end;
             foreach ($rest_end as $rest_end) {
-                $rest = Rest::where('attendance_id', $attendance->id)->whereNull('end_time')->first();
+                $rest = Rest::where('attendance_id', $attendance->id)
+                    ->whereNull('end_time')
+                    ->first();
                 $rest->end_time = $rest_end;
                 $rest->save();
             }
@@ -198,7 +209,12 @@ class AdminController extends Controller
     public function csv(Request $request)
     {
         $carbon = new CarbonImmutable($request->month);
-        $attendances = Attendance::with('rests')->where('user_id', $request->id)->whereYear('date', $carbon)->whereMonth('date', $carbon)->oldest('date')->get();
+        $attendances = Attendance::with('rests')
+            ->where('user_id', $request->id)
+            ->whereYear('date', $carbon)
+            ->whereMonth('date', $carbon)
+            ->oldest('date')
+            ->get();
 
         $head = ['日付', '出勤', '退勤', '休憩', '合計'];
 
