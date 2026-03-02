@@ -151,57 +151,41 @@ class AdminController extends Controller
 
     public function correction(CorrectionRequest $request)
     {
-        $attendance = Attendance::with('user')
+        $attendance = Attendance::with('user', 'rests')
             ->where('id', $request->id)
             ->first();
-        $attendance->update(['start_time' => $request->start, 'end_time' => $request->end]);
-
-        $rests = Rest::where('attendance_id', $request->id)->get();
-        if ($rests) {
-            Rest::destroy($rests);
-        }
-
-        if ($request->rest_start) {
-            $rest_starts = $request->rest_start;
-            foreach ($rest_starts as $rest_start) {
-                $rest = new Rest;
-                $rest->attendance_id = $attendance->id;
-                $rest->start_time = $rest_start;
-                $rest->save();
-            }
-
-            $rest_end = $request->rest_end;
-            foreach ($rest_end as $rest_end) {
-                $rest = Rest::where('attendance_id', $attendance->id)
-                    ->whereNull('end_time')
-                    ->first();
-                $rest->end_time = $rest_end;
-                $rest->save();
-            }
-        }
-
-        if ($request->newRest_start) {
-            Rest::create([
-                'attendance_id' => $attendance->id,
-                'start_time' => $request->newRest_start,
-                'end_time' => $request->newRest_end]);
-        }
-
         $stamp_correction_request = StampCorrectionRequest::where('attendance_id', $attendance->id)->first();
-        if ($stamp_correction_request) {
-            $stamp_correction_request->update([
-                'is_approval' => true,
-                'request_date' => CarbonImmutable::today(),
-                'request_reason' => $request->remarks]);
-        } else {
-            StampCorrectionRequest::create([
-                'user_id' => $attendance->user->id,
-                'attendance_id' => $attendance->id,
-                'is_approval' => true,
-                'target_date' => $attendance->date,
-                'request_date' => CarbonImmutable::today(),
-                'request_reason' => $request->remarks]);
-        }
+
+        DB::transaction(function () use(
+            $request,
+            $attendance,
+            // $rests,
+            $stamp_correction_request,
+        ) {
+            $attendance->update(['start_time' => $request->start, 'end_time' => $request->end]);
+            $attendance->rests()->delete();
+
+            if ($request->has('rests')) {
+                $attendance->rests()->createMany($request->rests);
+            }
+
+            if ($stamp_correction_request) {
+                $stamp_correction_request->update([
+                    'is_approval' => true,
+                    'request_date' => CarbonImmutable::today(),
+                    'request_reason' => $request->remarks,
+                ]);
+            } else {
+                StampCorrectionRequest::create([
+                    'user_id' => $attendance->user->id,
+                    'attendance_id' => $attendance->id,
+                    'is_approval' => true,
+                    'target_date' => $attendance->date,
+                    'request_date' => CarbonImmutable::today(),
+                    'request_reason' => $request->remarks,
+                ]);
+            }
+        });
 
         return redirect()->route('attendance_detail', ['id' => $attendance->id]);
     }
