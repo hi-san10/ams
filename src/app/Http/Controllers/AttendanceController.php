@@ -86,6 +86,17 @@ class AttendanceController extends Controller
     public function detail(Request $request)
     {
         $attendance = Attendance::with('user', 'rests')->where('id', $request->id)->first();
+        $rests = $attendance->rests
+            ->map(function ($rest) {
+                return [
+                    'start_time' => $rest->start_time->format('H:i'),
+                    'end_time' => $rest->end_time->format('H:i'),
+                ];
+            });
+        $rests->push([
+            'start_time' => null,
+            'end_time' => null,
+        ]);
 
         $hasStampCorrectionRequest = StampCorrectionRequest::with('user')->where('attendance_id', $attendance->id)->first();
         if (is_null($hasStampCorrectionRequest))
@@ -99,7 +110,7 @@ class AttendanceController extends Controller
         {
             $attendance = CorrectionAttendance::with('rests')->where('stamp_correction_request_id', $hasStampCorrectionRequest->id)->first();
         }
-        return view('attendances.detail', compact('attendance', 'hasStampCorrectionRequest', 'is_approval'));
+        return view('attendances.detail', compact('attendance', 'hasStampCorrectionRequest', 'is_approval', 'rests'));
 
 
 

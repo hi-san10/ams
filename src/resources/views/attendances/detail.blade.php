@@ -67,12 +67,12 @@
             @endif
             @if ($attendance->rests)
             <!-- 休憩があった場合 -->
-            @foreach($attendance->rests as $index => $rest)
+            @foreach($rests as $index => $rest)
             <tr>
                 <th>休憩</th>
-                <td><input type="text" class="attendance-time" name="rest_start[{{ $index }}]" value="{{ old('rest_start.'.$index, $rest->start_time->format('H:i')) }}"></td>
+                <td><input type="text" class="attendance-time" name="rests[{{ $index }}][start_time]"value="{{ old('rest_start.'.$index, $rest['start_time']) }}"></td>
                 <td>~</td>
-                <td><input type="text" class="attendance-time" name="rest_end[{{ $index }}]" value="{{ old('rest_end.'.$index, $rest->end_time->format('H:i')) }}"></td>
+                <td><input type="text" class="attendance-time" name="rests[{{ $index }}][end_time]" value="{{ old('rest_end.'.$index, $rest['end_time']) }}"></td>
             </tr>
             @if ($errors->has('rest_start.*') or $errors->has('rest_end.*'))
             <tr>
@@ -85,12 +85,12 @@
             @endforeach
             @endif
             <!-- 新規休憩入力フィールド -->
-            <tr>
+            <!-- <tr>
                 <th>休憩</th>
-                <td><input type="text" class="attendance-time" name="newRest_start" value="{{ old('newRest_start') }}"></td>
+                <td><input type="text" class="attendance-time" name="rests[{{ $index }}][start_time]" value="{{ old('rest_start') }}"></td>
                 <td>~</td>
-                <td><input type="text" class="attendance-time" name="newRest_end" value="{{ old('newRest_end') }}"></td>
-            </tr>
+                <td><input type="text" class="attendance-time" name="rests[{{ $index }}][end_time]" value="{{ old('rest_start') }}"></td>
+            </tr> -->
             @if ($errors->has('newRest_start') or $errors->has('newRest_end'))
             <tr>
                 <th></th>

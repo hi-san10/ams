@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\DB;
 use Carbon\CarbonImmutable;
 use App\Services\AttendanceService;
 
@@ -107,90 +108,84 @@ class AdminController extends Controller
     public function approval_detail(Request $request)
     {
         $request_id = $request->attendance_correct_request;
-        $correction = StampCorrectionRequest::with('user')->where('id', $request_id)->first();
+        $correction = StampCorrectionRequest::with('user')
+            ->where('id', $request_id)
+            ->first();
         if ($correction->is_approval == false) {
-            $attendance = CorrectionAttendance::with('rests')->where('stamp_correction_request_id', $request_id)->first();
-        }else{
-            $attendance = Attendance::with('rests')->where('id', $correction->attendance_id)->first();
+            $attendance = CorrectionAttendance::with('rests')
+                ->where('stamp_correction_request_id', $request_id)
+                ->first();
+        } else {
+            $attendance = Attendance::with('rests')
+                ->where('id', $correction->attendance_id)
+                ->first();
         }
+
         return view('admins.approve', compact('correction', 'attendance'));
     }
 
     public function approve(Request $request)
     {
         $stamp_correction_request = StampCorrectionRequest::where('id', $request->id)->first();
-        $stamp_correction_request->update(['is_approval' => true]);
-
-        $correctionAttendance = CorrectionAttendance::where('stamp_correction_request_id', $stamp_correction_request->id)->first();
+        $correctionAttendance = CorrectionAttendance::with('rests')->where('stamp_correction_request_id', $stamp_correction_request->id)->first();
         $attendance = Attendance::with('rests')->where('id', $stamp_correction_request->attendance_id)->first();
-        $attendance->update(['start_time' => $correctionAttendance->start_time, 'end_time' => $correctionAttendance->end_time]);
-
-        $rests = $attendance->rests;
-        foreach ($rests as $rest) {
-            Rest::where('id', $rest->id)->delete();
-        }
-
-        $correctionRests = CorrectionRest::where('correction_attendance_id', $correctionAttendance->id)->get();
-        foreach ($correctionRests as $rest) {
-            $newRest = new Rest;
-            $newRest->attendance_id = $attendance->id;
-            $newRest->start_time = $rest->start_time;
-            $newRest->end_time = $rest->end_time;
-            $newRest->save();
-        }
+        DB::transaction(function () use(
+            $stamp_correction_request,
+            $correctionAttendance,
+            $attendance,
+        ) {
+            $stamp_correction_request->update(['is_approval' => true]);
+            $attendance->update(['start_time' => $correctionAttendance->start_time, 'end_time' => $correctionAttendance->end_time]);
+            $attendance->rests()->delete();
+            $attendance->rests()->createMany(
+                $correctionAttendance->rests
+                    ->map(fn ($rest) => [
+                        'start_time' => $rest->start_time,
+                        'end_time' => $rest->end_time,
+                    ])
+                    ->toArray());
+        });
 
         return redirect()->route('approval_detail', ['attendance_correct_request' => $request->id]);
     }
 
     public function correction(CorrectionRequest $request)
     {
-        $attendance = Attendance::with('user')->where('id', $request->id)->first();
-        $attendance->update(['start_time' => $request->start, 'end_time' => $request->end]);
-
-        $rests = Rest::where('attendance_id', $request->id)->get();
-        if ($rests) {
-            Rest::destroy($rests);
-        }
-
-        if ($request->rest_start) {
-            $rest_starts = $request->rest_start;
-            foreach ($rest_starts as $rest_start) {
-                $rest = new Rest;
-                $rest->attendance_id = $attendance->id;
-                $rest->start_time = $rest_start;
-                $rest->save();
-            }
-
-            $rest_end = $request->rest_end;
-            foreach ($rest_end as $rest_end) {
-                $rest = Rest::where('attendance_id', $attendance->id)->whereNull('end_time')->first();
-                $rest->end_time = $rest_end;
-                $rest->save();
-            }
-        }
-
-        if ($request->newRest_start) {
-            Rest::create([
-                'attendance_id' => $attendance->id,
-                'start_time' => $request->newRest_start,
-                'end_time' => $request->newRest_end]);
-        }
-
+        $attendance = Attendance::with('user', 'rests')
+            ->where('id', $request->id)
+            ->first();
         $stamp_correction_request = StampCorrectionRequest::where('attendance_id', $attendance->id)->first();
-        if ($stamp_correction_request) {
-            $stamp_correction_request->update([
-                'is_approval' => true,
-                'request_date' => CarbonImmutable::today(),
-                'request_reason' => $request->remarks]);
-        } else {
-            StampCorrectionRequest::create([
-                'user_id' => $attendance->user->id,
-                'attendance_id' => $attendance->id,
-                'is_approval' => true,
-                'target_date' => $attendance->date,
-                'request_date' => CarbonImmutable::today(),
-                'request_reason' => $request->remarks]);
-        }
+
+        DB::transaction(function () use(
+            $request,
+            $attendance,
+            // $rests,
+            $stamp_correction_request,
+        ) {
+            $attendance->update(['start_time' => $request->start, 'end_time' => $request->end]);
+            $attendance->rests()->delete();
+
+            if ($request->has('rests')) {
+                $attendance->rests()->createMany($request->rests);
+            }
+
+            if ($stamp_correction_request) {
+                $stamp_correction_request->update([
+                    'is_approval' => true,
+                    'request_date' => CarbonImmutable::today(),
+                    'request_reason' => $request->remarks,
+                ]);
+            } else {
+                StampCorrectionRequest::create([
+                    'user_id' => $attendance->user->id,
+                    'attendance_id' => $attendance->id,
+                    'is_approval' => true,
+                    'target_date' => $attendance->date,
+                    'request_date' => CarbonImmutable::today(),
+                    'request_reason' => $request->remarks,
+                ]);
+            }
+        });
 
         return redirect()->route('attendance_detail', ['id' => $attendance->id]);
     }
@@ -198,7 +193,12 @@ class AdminController extends Controller
     public function csv(Request $request)
     {
         $carbon = new CarbonImmutable($request->month);
-        $attendances = Attendance::with('rests')->where('user_id', $request->id)->whereYear('date', $carbon)->whereMonth('date', $carbon)->oldest('date')->get();
+        $attendances = Attendance::with('rests')
+            ->where('user_id', $request->id)
+            ->whereYear('date', $carbon)
+            ->whereMonth('date', $carbon)
+            ->oldest('date')
+            ->get();
 
         $head = ['日付', '出勤', '退勤', '休憩', '合計'];
 
@@ -236,12 +236,14 @@ class AdminController extends Controller
         }
 
         rewind($f);
-        $csv = str_replace(PHP_EOL, "\r\n", stream_get_contents($f));
+        $csv = stream_get_contents($f);
+        fclose($f);
+        $csv = str_replace(PHP_EOL, "\r\n", $csv);
         $csv = mb_convert_encoding($csv, 'SJIS-win', 'UTF-8');
-        $headers = array(
-            'Content-Type' => 'text/csv',
-        );
 
-        return Response::make($csv, 200, $headers);
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv; charset=SJIS-win',
+            'Content-Disposition' => 'attachment; filename="attendance.csv"',
+        ]);
     }
 }
