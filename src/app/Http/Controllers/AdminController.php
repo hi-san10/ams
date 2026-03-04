@@ -236,12 +236,14 @@ class AdminController extends Controller
         }
 
         rewind($f);
-        $csv = str_replace(PHP_EOL, "\r\n", stream_get_contents($f));
+        $csv = stream_get_contents($f);
+        fclose($f);
+        $csv = str_replace(PHP_EOL, "\r\n", $csv);
         $csv = mb_convert_encoding($csv, 'SJIS-win', 'UTF-8');
-        $headers = array(
-            'Content-Type' => 'text/csv',
-        );
 
-        return Response::make($csv, 200, $headers);
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv; charset=SJIS-win',
+            'Content-Disposition' => 'attachment; filename="attendance.csv"',
+        ]);
     }
 }
