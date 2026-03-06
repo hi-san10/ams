@@ -27,11 +27,14 @@ class AttendanceController extends Controller
         $date = $carbon->toDateString();
 
         $user = Attendance::where('user_id', Auth::id())->where('date', $date)->first();
-        $rest = Rest::when($user, fn ($query) => $query->where('attendance_id', $user->id)->whereNull('end_time'))->exists();
-        if ($user)
-        {
+        $rest = Rest::when(
+            $user, fn ($query) => $query
+                ->where('attendance_id', $user->id)
+                ->whereNull('end_time')
+            )->exists();
+        if ($user) {
             $workEnd = $user->end_time;
-        }else{
+        } else {
             $workEnd = null;
         }
 
@@ -55,8 +58,10 @@ class AttendanceController extends Controller
     {
         $carbon = new CarbonImmutable;
 
-        Attendance::where('user_id', Auth::id())->whereDate('date', $carbon)
-            ->update(['end_time' => $carbon]);
+        Attendance::where('user_id', Auth::id())
+            ->whereDate('date', $carbon)
+            ->update(['end_time' => $carbon]
+        );
 
         return redirect('attendance');
     }
@@ -85,7 +90,9 @@ class AttendanceController extends Controller
 
     public function detail(Request $request)
     {
-        $attendance = Attendance::with('user', 'rests')->where('id', $request->id)->first();
+        $attendance = Attendance::with('user', 'rests')
+            ->where('id', $request->id)
+            ->first();
         $rests = $attendance->rests
             ->map(function ($rest) {
                 return [
@@ -98,16 +105,16 @@ class AttendanceController extends Controller
             'end_time' => null,
         ]);
 
-        $hasStampCorrectionRequest = StampCorrectionRequest::with('user')->where('attendance_id', $attendance->id)->first();
-        if (is_null($hasStampCorrectionRequest))
-        {
+        $hasStampCorrectionRequest = StampCorrectionRequest::with('user')
+            ->where('attendance_id', $attendance->id)
+            ->first();
+        if (is_null($hasStampCorrectionRequest)) {
             $is_approval = false;
-        }else{
+        } else {
             $is_approval = $hasStampCorrectionRequest->is_approval;
         }
 
-        if ($hasStampCorrectionRequest && $is_approval == false && Auth::check())
-        {
+        if ($hasStampCorrectionRequest && $is_approval == false && Auth::check()) {
             $attendance = CorrectionAttendance::with('rests')->where('stamp_correction_request_id', $hasStampCorrectionRequest->id)->first();
         }
         return view('attendances.detail', compact('attendance', 'hasStampCorrectionRequest', 'is_approval', 'rests'));
