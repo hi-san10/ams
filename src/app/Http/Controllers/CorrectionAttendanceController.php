@@ -4,56 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Attendance;
-use App\Models\CorrectionAttendance;
-use App\Models\CorrectionRest;
 use App\Models\StampCorrectionRequest;
-use Carbon\CarbonImmutable;
 use App\Http\Requests\CorrectionRequest;
+use App\Services\CorrectionService;
 use Illuminate\Support\Facades\Auth;
 
 class CorrectionAttendanceController extends Controller
 {
+    public function __construct(CorrectionService $correctionService)
+    {
+        $this->correctionService = $correctionService;
+    }
+
     public function correction(CorrectionRequest $request, Attendance $attendance)
     {
-        $correction = StampCorrectionRequest::create([
-            'user_id' => Auth::id(),
-            'attendance_id' => $attendance->id,
-            'target_date' => $attendance->date,
-            'request_date' => CarbonImmutable::today(),
-            'request_reason' => $request->remarks
-        ]);
-
-        $correction_attendance = CorrectionAttendance::create([
-            'stamp_correction_request_id' => $correction->id,
-            'start_time' => $request->start,
-            'end_time' => $request->end,
-        ]);
-
-        if (!is_null($request->rest_start)) {
-            $rest_starts = $request->rest_start;
-            foreach($rest_starts as $rest_start) {
-                $rest = CorrectionRest::create([
-                    'correction_attendance_id' => $correction_attendance->id,
-                    'start_time' => $rest_start,
-                ]);
-            }
-
-            $rest_ends = $request->rest_end;
-            foreach($rest_ends as $rest_end) {
-                $end_time = new CorrectionRest;
-                $end_time = CorrectionRest::where('correction_attendance_id', $rest->correction_attendance_id)->whereNull('end_time')->first();
-                $end_time->end_time = $rest_end;
-                $end_time->save();
-            }
-        }
-
-        if (!is_null($request->newRest_start)) {
-            CorrectionRest::create([
-                'correction_attendance_id' => $correction_attendance->id,
-                'start_time' => $request->newRest_start,
-                'end_time' => $request->newRest_end
-            ]);
-        }
+        $this->correctionService->correction($request, $attendance);
 
         return redirect()->route('attendance_list');
     }
