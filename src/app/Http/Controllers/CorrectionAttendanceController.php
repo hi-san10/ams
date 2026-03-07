@@ -10,50 +10,42 @@ use App\Models\StampCorrectionRequest;
 use Carbon\CarbonImmutable;
 use App\Http\Requests\CorrectionRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CorrectionAttendanceController extends Controller
 {
     public function correction(CorrectionRequest $request, Attendance $attendance)
     {
-        $correction = StampCorrectionRequest::create([
-            'user_id' => Auth::id(),
-            'attendance_id' => $attendance->id,
-            'target_date' => $attendance->date,
-            'request_date' => CarbonImmutable::today(),
-            'request_reason' => $request->remarks
-        ]);
-
-        $correction_attendance = CorrectionAttendance::create([
-            'stamp_correction_request_id' => $correction->id,
-            'start_time' => $request->start,
-            'end_time' => $request->end,
-        ]);
-
-        if (!is_null($request->rest_start)) {
-            $rest_starts = $request->rest_start;
-            foreach($rest_starts as $rest_start) {
-                $rest = CorrectionRest::create([
-                    'correction_attendance_id' => $correction_attendance->id,
-                    'start_time' => $rest_start,
+        DB::transaction(function () use(
+            $request,
+            $attendance,
+        ) {
+            $correction = StampCorrectionRequest::create([
+                'user_id' => Auth::id(),
+                'attendance_id' => $attendance->id,
+                'target_date' => $attendance->date,
+                'request_date' => CarbonImmutable::today(),
+                'request_reason' => $request->remarks
                 ]);
-            }
 
-            $rest_ends = $request->rest_end;
-            foreach($rest_ends as $rest_end) {
-                $end_time = new CorrectionRest;
-                $end_time = CorrectionRest::where('correction_attendance_id', $rest->correction_attendance_id)->whereNull('end_time')->first();
-                $end_time->end_time = $rest_end;
-                $end_time->save();
-            }
-        }
-
-        if (!is_null($request->newRest_start)) {
-            CorrectionRest::create([
-                'correction_attendance_id' => $correction_attendance->id,
-                'start_time' => $request->newRest_start,
-                'end_time' => $request->newRest_end
+            $correction_attendance = CorrectionAttendance::create([
+                'stamp_correction_request_id' => $correction->id,
+                'start_time' => $request->start,
+                'end_time' => $request->end,
             ]);
-        }
+
+            $rests = [];
+            foreach ($request->rests as $rest) {
+                if (blank($rest['start_time']) || blank($rest['end_time'])) {
+                    continue;
+                }
+                $rests[] = [
+                    'start_time' => $rest['start_time'],
+                    'end_time' => $rest['end_time'],
+                ];
+            }
+            $correction_attendance->rests()->createMany($rests);
+        });
 
         return redirect()->route('attendance_list');
     }
