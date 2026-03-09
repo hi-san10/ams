@@ -39,7 +39,7 @@
             <td>{{ $correction_request->target_date->format('Y/m/d') }}</td>
             <td>{{ $correction_request->request_reason }}</td>
             <td>{{ $correction_request->request_date->format('Y/m/d') }}</td>
-            <td><a href="{{ route('attendance_detail', ['id' => $correction_request->attendance_id]) }}" class="detail">詳細</a></td>
+            <td><a href="{{ route('attendance_detail', ['attendance' => $correction_request->attendance_id]) }}" class="detail">詳細</a></td>
         </tr>
         @endforeach
     </table>

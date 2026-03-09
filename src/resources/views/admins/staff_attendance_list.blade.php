@@ -46,7 +46,7 @@
                     @else {{ substr($attendance->total_work_time, 0, 5) }}
                     @endif
                 </td>
-                <td><a href="{{ route('attendance_detail', ['id' => $attendance->id]) }}" class="detail">詳細</a></td>
+                <td><a href="{{ route('attendance_detail', ['attendance' => $attendance->id]) }}" class="detail">詳細</a></td>
             </tr>
             @endforeach
         </table>

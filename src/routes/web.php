@@ -42,7 +42,7 @@ Route::group(['prefix' => 'attendance'], function()
 
     Route::get('/list/{month?}', [AttendanceController::class, 'list'])->name('attendance_list');
 
-    Route::get('/{id}', [AttendanceController::class, 'detail'])->name('attendance_detail');
+    Route::get('/{attendance}', [AttendanceController::class, 'detail'])->name('attendance_detail');
 
     Route::post('/request/{id}', [AttendanceController::class, 'request'])->name('attendance_request');
 });
