@@ -26,10 +26,8 @@ class CorrectionRequest extends FormRequest
         return [
             'start' => ['date_format:H:i', 'before:end'],
             'end' => ['date_format:H:i'],
-            'rest_start.*' => ['date_format:H:i', 'after:start', 'before:end'],
-            'rest_end.*' => ['date_format:H:i', 'after:rest_start.*', 'before:end'],
-            'newRest_start' => ['date_format:H:i', 'after:start', 'before:end', 'nullable', 'required_with:newRest_end'],
-            'newRest_end' => ['date_format:H:i', 'after:newRest_start', 'before:end', 'nullable', 'required_with:newRest_start'],
+            'rests.*.start_time' => ['date_format:H:i', 'after:start', 'before:end', 'nullable', 'required_with:rests.*.end_time'],
+            'rests.*.end_time' => ['date_format:H:i', 'after:start', 'before:end', 'nullable', 'required_with:rests.*.start_time'],
             'remarks' => ['required']
         ];
     }
@@ -42,23 +40,15 @@ class CorrectionRequest extends FormRequest
 
             'end.date_format' => '時:分(00:00)で入力してください',
 
-            'rest_start.*.date_format' => '時:分(00:00)で入力してください',
-            'rest_start.*.after' => '休憩時間が勤務時間外です',
-            'rest_start.*.before' => '休憩時間が勤務時間外です',
+            'rests.*.start_time.date_format' => '時:分(00:00)で入力してください',
+            'rests.*.start_time.after' => '休憩時間が不適切な値です',
+            'rests.*.start_time.before' => '休憩時間が不適切な値です',
+            'rests.*.start_time.required_with' => '休憩時間を入力してください',
 
-            'rest_end.*.date_format' => '時:分(00:00)で入力してください',
-            'rest_end.*.after' => '休憩時間が不適切な値です',
-            'rest_end.*.before' => '休憩時間が勤務時間外です',
-
-            'newRest_start.date_format' => '時:分(00:00)で入力してください',
-            'newRest_start.after' => '休憩時間が勤務時間外です',
-            'newRest_start.before' => '休憩時間が勤務時間外です',
-            'newRest_start.required_with' => '休憩時間を入力してください',
-
-            'newRest_end.date_format' => '時:分(00:00)で入力してください',
-            'newRest_end.after' => '休憩時間が不適切な値です',
-            'newRest_end.before' => '休憩時間が勤務時間外です',
-            'newRest_end.required_with' => '休憩時間を入力してください',
+            'rests.*.end_time.date_format' => '時:分(00:00)で入力してください',
+            'rests.*.end_time.after' => '休憩時間が不適切な値です',
+            'rests.*.end_time.before' => '休憩時間が不適切な値です',
+            'rests.*.end_time.required_with' => '休憩時間を入力してください',
 
             'remarks.required' => '備考を記入してください'
         ];

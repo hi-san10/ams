@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\CorrectionAttendance;
-use App\Models\CorrectionRest;
 use App\Models\Rest;
 use App\Models\StampCorrectionRequest;
 use Illuminate\Http\Request;
@@ -88,11 +87,23 @@ class AttendanceController extends Controller
         return view('attendances.list', compact('attendances', 'carbon', 'previousMonth', 'nextMonth'));
     }
 
-    public function detail(Request $request)
+    public function detail(Attendance $attendance)
     {
-        $attendance = Attendance::with('user', 'rests')
-            ->where('id', $request->id)
+        $attendance->load('user', 'rests');
+        $userName = $attendance->user->name;
+        $date = $attendance->date;
+        $is_approval = false;
+
+        $hasStampCorrectionRequest = StampCorrectionRequest::with('user')
+            ->where('attendance_id', $attendance->id)
             ->first();
+        if ($hasStampCorrectionRequest) {
+            $attendance = CorrectionAttendance::with('rests')
+                ->where('stamp_correction_request_id', $hasStampCorrectionRequest->id)
+                ->first();
+            $is_approval = $hasStampCorrectionRequest->is_approval;
+        }
+
         $rests = $attendance->rests
             ->map(function ($rest) {
                 return [
@@ -105,25 +116,6 @@ class AttendanceController extends Controller
             'end_time' => null,
         ]);
 
-        $hasStampCorrectionRequest = StampCorrectionRequest::with('user')
-            ->where('attendance_id', $attendance->id)
-            ->first();
-        if (is_null($hasStampCorrectionRequest)) {
-            $is_approval = false;
-        } else {
-            $is_approval = $hasStampCorrectionRequest->is_approval;
-        }
-
-        if ($hasStampCorrectionRequest && $is_approval == false && Auth::check()) {
-            $attendance = CorrectionAttendance::with('rests')->where('stamp_correction_request_id', $hasStampCorrectionRequest->id)->first();
-        }
-        return view('attendances.detail', compact('attendance', 'hasStampCorrectionRequest', 'is_approval', 'rests'));
-
-
-
-        $correctionAttendance = CorrectionAttendance::where('stamp_correction_request_id', $hasStampCorrectionRequest->id)->first();
-        $correctionRests = CorrectionRest::where('correction_attendance_id', $correctionAttendance->id)->get();
-
-        return view('attendances.detail', compact('attendance', 'hasStampCorrectionRequest', 'correctionAttendance', 'correctionRests', 'is_approval'));
+        return view('attendances.detail', compact('userName', 'date', 'attendance', 'rests', 'hasStampCorrectionRequest', 'is_approval'));
     }
 }
