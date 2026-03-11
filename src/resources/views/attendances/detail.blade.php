@@ -53,28 +53,35 @@
             @foreach($rests as $index => $rest)
             <tr>
                 <th>休憩</th>
-                <td><input type="text" class="attendance-time" name="rests[{{ $index }}][start_time]"value="{{ old('rest_start.'.$index, $rest['start_time']) }}"></td>
+                <td>
+                    <input
+                        type="text"
+                        class="attendance-time"
+                        name="rests[{{ $index }}][start_time]"
+                        value="{{ old('rests.'.$index.'.start_time', $rest['start_time']) }}"
+                    >
+                    <div style="color: red;">
+                        @error('rests.'.$index.'.start_time')
+                            {{ $message }}
+                        @enderror
+                    </div>
+                </td>
                 <td>~</td>
-                <td><input type="text" class="attendance-time" name="rests[{{ $index }}][end_time]" value="{{ old('rest_end.'.$index, $rest['end_time']) }}"></td>
+                <td>
+                    <input
+                        type="text"
+                        class="attendance-time"
+                        name="rests[{{ $index }}][end_time]"
+                        value="{{ old('rests.'.$index.'.end_time', $rest['end_time']) }}"
+                    >
+                <div style="color: red;">
+                    @error('rests.'.$index.'.end_time')
+                        {{ $message }}
+                    @enderror
+                </div>
+                </td>
             </tr>
-            @if ($errors->has('rest_start.*') or $errors->has('rest_end.*'))
-            <tr>
-                <th></th>
-                <td style="color: red;">@error('rest_start.'.$index) {{ $message }} @enderror</td>
-                <td></td>
-                <td style="color: red;">@error('rest_end.'.$index) {{ $message }} @enderror</td>
-            </tr>
-            @endif
             @endforeach
-
-            @if ($errors->has('newRest_start') or $errors->has('newRest_end'))
-            <tr>
-                <th></th>
-                <td style="color: red;">@error('newRest_start') {{ $message }} @enderror</td>
-                <td></td>
-                <td style="color: red;">@error('newRest_end') {{ $message }} @enderror</td>
-            </tr>
-            @endif
 
             <tr>
                 <th class="left-bottom">備考</th>
@@ -86,19 +93,16 @@
                             {{ $hasStampCorrectionRequest->request_reason }}
                         @endif
                     </textarea>
+                    <div style="color: red;">
+                        @error('remarks')
+                            {{ $message }}
+                        @enderror
+                    </div>
                 </td>
                 <td></td>
             </tr>
-
-            @error('remarks')
-            <tr>
-                <th></th>
-                <td style="color: red;">{{ $message }}</td>
-                <td></td>
-                <td></td>
-            </tr>
-            @enderror
         </table>
+
         <div class="bottom"></div>
         <!-- 承認済み -->
         @if ($is_approval == true)
