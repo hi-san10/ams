@@ -12,6 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
+use App\Services\AttendanceService;
 
 class AdminAttendanceListTest extends TestCase
 {
@@ -24,6 +25,10 @@ class AdminAttendanceListTest extends TestCase
         $this->seed(AdminUsersTableSeeder::class);
         $admin = AdminUser::find(1);
 
+        $this->seed(UsersTableSeeder::class);
+        $this->seed(AttendancesTableSeeder::class);
+        $this->seed(RestsTableSeeder::class);
+
         $this->get('/login')->assertStatus(200);
         $this->postJson('/admin/login', ['email' => $admin->email, 'password' => '00000000']);
         $this->assertTrue(Auth::guard('admins')->check());
@@ -35,104 +40,60 @@ class AdminAttendanceListTest extends TestCase
      */
 
     //  全ユーザー当日勤怠一覧表示
-    public function testAttendanceList()
+    public function testAttendanceList() :void
     {
-        $this->seed(UsersTableSeeder::class);
-        $this->seed(AttendancesTableSeeder::class);
-        $this->seed(RestsTableSeeder::class);
         $carbon = new CarbonImmutable();
 
-        $attendances = Attendance::with('user', 'rests')->whereDate('date', $carbon)->get();
-        foreach ($attendances as $attendance) {
-            $start = new CarbonImmutable($attendance->start_time);
-            $end = new CarbonImmutable($attendance->end_time);
-            $workingTime = $start->diffInSeconds($end);
+        $attendances = Attendance::with('user', 'rests')
+            ->whereDate('date', $carbon)
+            ->get();
 
-            $rests = $attendance->rests;
-            $number = 0;
-            foreach ($rests as $rest) {
-                $restStart = new CarbonImmutable($rest->start_time);
-                $restEnd = new CarbonImmutable($rest->end_time);
-                $diffRest = $restStart->diffInSeconds($restEnd);
-                $number = $number + $diffRest;
+        $service = new AttendanceService;
+        $result = $service->calculate($attendances);
 
-                $attendance->is_rest = $rest->end_time;
-            }
-
-            $attendance->totalRest = gmdate('H:i:s', $number);
-            $attendance->totalWork = gmdate('H:i:s', $workingTime - $number);
-        }
-        $this->get('/admin/attendance/list')->assertViewHas('attendances', $attendances);
+        $this->get('/admin/attendance/list')
+            ->assertViewHas('attendances', $result);
     }
 
     // 勤怠一覧画面日付確認
-    public function testDate()
+    public function testDate() :void
     {
         $carbon = new CarbonImmutable();
-        $this->get('admin/attendance/list')->assertSee($carbon->format('Y年m月d日'));
+        $this->get('admin/attendance/list')
+            ->assertSee($carbon->format('Y年m月d日'));
     }
 
     // 勤怠一覧画面前日情報表示
-    public function testPreviousDay()
+    public function testPreviousDay() :void
     {
-        $this->seed(UsersTableSeeder::class);
-        $this->seed(AttendancesTableSeeder::class);
-        $this->seed(RestsTableSeeder::class);
         $carbon = new CarbonImmutable();
 
         $previousDay = new CarbonImmutable($carbon->subDay(1));
-        $attendances = Attendance::with('user', 'rests')->whereDay('date', $previousDay)->get();
-        foreach ($attendances as $attendance) {
-            $start = new CarbonImmutable($attendance->start_time);
-            $end = new CarbonImmutable($attendance->end_time);
-            $workingTime = $start->diffInSeconds($end);
+        $attendances = Attendance::with('user', 'rests')
+            ->whereDay('date', $previousDay)
+            ->get();
 
-            $rests = $attendance->rests;
-            $number = 0;
-            foreach ($rests as $rest) {
-                $restStart = new CarbonImmutable($rest->start_time);
-                $restEnd = new CarbonImmutable($rest->end_time);
-                $diffRest = $restStart->diffInSeconds($restEnd);
-                $number = $number + $diffRest;
+        $service = new AttendanceService;
+        $result = $service->calculate($attendances);
 
-                $attendance->is_rest = $rest->end_time;
-            }
-
-            $attendance->totalRest = gmdate('H:i:s', $number);
-            $attendance->totalWork = gmdate('H:i:s', $workingTime - $number);
-        }
-        $this->get(route('admin_attendance_list', ['day' => $previousDay]))->assertViewHas('attendances', $attendances);
+        $this->get(route('admin_attendance_list', ['day' => $previousDay]))
+            ->assertViewHas('attendances', $result);
     }
 
     // 勤怠一覧画面翌日情報表示
-    public function testNextDay()
+    public function testNextDay() :void
     {
-        $this->seed(UsersTableSeeder::class);
-        $this->seed(AttendancesTableSeeder::class);
-        $this->seed(RestsTableSeeder::class);
         $carbon = new CarbonImmutable();
 
         $nextDay = new CarbonImmutable($carbon->addDay(1));
-        $attendances = Attendance::with('user', 'rests')->whereDay('date', $nextDay)->get();
-        foreach ($attendances as $attendance) {
-            $start = new CarbonImmutable($attendance->start_time);
-            $end = new CarbonImmutable($attendance->end_time);
-            $workingTime = $start->diffInSeconds($end);
+        $attendances = Attendance::with('user', 'rests')
+            ->whereDay('date', $nextDay)
+            ->get();
 
-            $rests = $attendance->rests;
-            $number = 0;
-            foreach ($rests as $rest) {
-                $restStart = new CarbonImmutable($rest->start_time);
-                $restEnd = new CarbonImmutable($rest->end_time);
-                $diffRest = $restStart->diffInSeconds($restEnd);
-                $number = $number + $diffRest;
+        $service = new AttendanceService;
+        $result = $service->calculate($attendances);
 
-                $attendance->is_rest = $rest->end_time;
-            }
-
-            $attendance->totalRest = gmdate('H:i:s', $number);
-            $attendance->totalWork = gmdate('H:i:s', $workingTime - $number);
-        }
-        $this->get(route('admin_attendance_list', ['day' => $nextDay]))->assertViewHas('attendances', $attendances);
+        $this->get(route('admin_attendance_list', ['day' => $nextDay]))
+            ->assertViewHas('attendances', $result);
     }
 }
