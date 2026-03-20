@@ -37,10 +37,13 @@ class AdminCorrectionDetailTest extends TestCase
         $this->seed(UsersTableSeeder::class);
         $this->seed(AttendancesTableSeeder::class);
         $this->seed(RestsTableSeeder::class);
-        $attendance = Attendance::with('user', 'rests')->where('id', 1)->first();
+        $attendance = Attendance::with('user', 'rests')
+            ->where('id', 1)
+            ->first();
 
         $this->get('/admin/attendance/list')->assertStatus(200);
-        $this->get(route('attendance_detail', ['id' => $attendance->id]))->assertViewHas('attendance', $attendance);
+        $this->get(route('attendance_detail', ['attendance' => $attendance->id]))
+            ->assertViewHas('attendance', $attendance);
     }
 
     /**
@@ -57,7 +60,8 @@ class AdminCorrectionDetailTest extends TestCase
         $this->seed(RestsTableSeeder::class);
         $attendance = Attendance::where('user_id', 1)->first();
 
-        $this->get(route('attendance_detail', ['id' => $attendance->id]))->assertStatus(200);
+        $this->get(route('attendance_detail', ['attendance' => $attendance->id]))
+            ->assertStatus(200);
 
         $request = new CorrectionRequest();
         $rules = $request->rules();
@@ -90,14 +94,17 @@ class AdminCorrectionDetailTest extends TestCase
                 [
                     'start' => '08:00',
                     'end' => '17:00',
-                    'newRest_start' => '17:10',
-                    'newRest_end' => '17:20',
+                    'rests' => [
+                        [
+                            'start_time' => '08:10',
+                            'end_time' => '17:20',
+                        ]
+                    ],
                     'remarks' => '電車遅延'
                 ],
                 true,
                 [
-                    'newRest_start' => ['休憩時間が勤務時間外です'],
-                    'newRest_end' => ['休憩時間が勤務時間外です']
+                    'rests.0.end_time' => ['休憩時間が不適切な値です']
                 ]
             ],
 
@@ -105,8 +112,8 @@ class AdminCorrectionDetailTest extends TestCase
                 [
                     'start' => '08:00',
                     'end' => '17:00',
-                    'newRest_start' => '10:00',
-                    'newRest_end' => '10:10',
+                    'rests_start' => '10:00',
+                    'rests_end' => '10:10',
                     'remarks' => ''
                 ],
                 true,
