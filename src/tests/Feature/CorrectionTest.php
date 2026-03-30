@@ -29,14 +29,9 @@ class CorrectionTest extends TestCase
         $this->seed(UsersTableSeeder::class);
         $this->seed(AttendancesTableSeeder::class);
         $this->seed(RestsTableSeeder::class);
+
         $user = User::find(1);
-        $attendance = Attendance::where('user_id', $user->id)->first();
-        $rest = Rest::where('attendance_id', $attendance->id)->first();
-
-        $this->get('/login')->assertStatus(200);
-
-        $this->post(url('/login'), ['email' => $user->email, 'password' => '00000000']);
-        $this->assertAuthenticatedAs($user);
+        $this->actingAs($user);
     }
     /**
      * A basic feature test example.
@@ -45,12 +40,12 @@ class CorrectionTest extends TestCase
      */
 
     //  修正処理バリデーション
-    public function testCorrectionValidation($inData, $outFail, $outMessage)
+    public function testCorrectionValidation($inData, $outFail, $outMessage) :void
     {
         $user = User::find(1);
         $attendance = Attendance::where('user_id', $user->id)->first();
 
-        $this->get(route('attendance_detail', ['id' => $attendance->id]))->assertStatus(200);
+        $this->get(route('attendance_detail', ['attendance' => $attendance->id]))->assertStatus(200);
 
         $request = new CorrectionRequest();
         $rules = $request->rules();
@@ -62,7 +57,7 @@ class CorrectionTest extends TestCase
         $this->assertEquals($outMessage, $messages);
     }
 
-    public function validationProvider()
+    public function validationProvider() :array
     {
         return [
             'start_timeError' => [
@@ -83,14 +78,17 @@ class CorrectionTest extends TestCase
                 [
                     'start' => '08:00',
                     'end' => '17:00',
-                    'newRest_start' => '17:10',
-                    'newRest_end' => '17:20',
+                    'rests' => [
+                        [
+                            'start_time' => '08:10',
+                            'end_time' => '17:10',
+                        ]
+                    ],
                     'remarks' => '電車遅延'
                 ],
                 true,
                 [
-                    'newRest_start' => ['休憩時間が勤務時間外です'],
-                    'newRest_end' => ['休憩時間が勤務時間外です']
+                    'rests.0.end_time' => ['休憩時間が不適切な値です'],
                 ]
             ],
 
@@ -98,8 +96,8 @@ class CorrectionTest extends TestCase
                 [
                     'start' => '08:00',
                     'end' => '17:00',
-                    'newRest_start' => '10:00',
-                    'newRest_end' => '10:10',
+                    'rest_start' => '10:00',
+                    'rest_end' => '10:10',
                     'remarks' => ''
                 ],
                 true,
@@ -110,22 +108,26 @@ class CorrectionTest extends TestCase
         ];
     }
 
-    // 修正処理実行
-    public function testCorrection()
+    // 修正申請後、管理者による申請一覧画面表示
+    public function testCorrection() :void
     {
         $user = User::find(1);
         $attendance = Attendance::where('user_id', $user->id)->first();
 
-        $this->get(route('attendance_detail', ['id' => $attendance->id]))->assertStatus(200);
+        $this->get(route('attendance_detail', ['attendance' => $attendance->id]))->assertStatus(200);
 
         $data = [
             'start' => '08:00',
             'end' => '17:00',
-            'newRest_start' => '10:00',
-            'newRest_end' => '10:10',
+            'rests' => [
+                [
+                    'start_time' => '10:00',
+                    'end_time' => '10:10',
+                ]
+            ],
             'remarks' => '電車遅延'
         ];
-        $this->postJson(route('correction', ['id' => $attendance->id]), $data)->assertStatus(302);
+        $this->postJson(route('correction', ['attendance' => $attendance->id]), $data)->assertStatus(302);
         $this->assertDatabaseHas('stamp_correction_requests', [
             'id' => 1,
             'user_id' => $user->id,
@@ -159,21 +161,25 @@ class CorrectionTest extends TestCase
     }
 
     // 申請一覧画面承認待ち表示
-    public function testRequestList()
+    public function testRequestList() :void
     {
         $user = User::find(1);
         $attendance = Attendance::where('user_id', $user->id)->first();
 
-        $this->get(route('attendance_detail', ['id' => $attendance->id]))->assertStatus(200);
+        $this->get(route('attendance_detail', ['attendance' => $attendance->id]))->assertStatus(200);
 
         $data = [
             'start' => '08:00',
             'end' => '17:00',
-            'newRest_start' => '10:00',
-            'newRest_end' => '10:10',
+            'rests' => [
+                [
+                    'start_time' => '10:00',
+                    'end_time' => '10:10',
+                ]
+            ],
             'remarks' => '電車遅延'
         ];
-        $this->postJson(route('correction', ['id' => $attendance->id]), $data)->assertStatus(302);
+        $this->postJson(route('correction', ['attendance' => $attendance->id]), $data)->assertStatus(302);
         $this->assertDatabaseHas('stamp_correction_requests', [
             'id' => 1,
             'user_id' => $user->id,
@@ -184,26 +190,33 @@ class CorrectionTest extends TestCase
             'request_reason' => $data['remarks']
         ]);
 
-        $correction_requests = StampCorrectionRequest::with('user', 'attendance')->where('user_id', $user->id)->where('is_approval', false)->get();
+        $correction_requests = StampCorrectionRequest::with('user', 'attendance')
+            ->where('user_id', $user->id)
+            ->where('is_approval', false)
+            ->get();
         $this->get(route('request_list'))->assertViewHas('correction_requests', $correction_requests);
     }
 
     // 申請一覧画面承認済み表示
-    public function testApproved()
+    public function testApproved() :void
     {
         $user = User::find(1);
         $attendance = Attendance::where('user_id', $user->id)->first();
 
-        $this->get(route('attendance_detail', ['id' => $attendance->id]))->assertStatus(200);
+        $this->get(route('attendance_detail', ['attendance' => $attendance->id]))->assertStatus(200);
 
         $data = [
             'start' => '08:00',
             'end' => '17:00',
-            'newRest_start' => '10:00',
-            'newRest_end' => '10:10',
+            'rests' => [
+                [
+                    'start_time' => '10:00',
+                    'end_time' => '10:10',
+                ]
+            ],
             'remarks' => '電車遅延'
         ];
-        $this->postJson(route('correction', ['id' => $attendance->id]), $data)->assertStatus(302);
+        $this->postJson(route('correction', ['attendance' => $attendance->id]), $data)->assertStatus(302);
         $this->assertDatabaseHas('stamp_correction_requests', [
             'id' => 1,
             'user_id' => $user->id,
@@ -224,27 +237,34 @@ class CorrectionTest extends TestCase
             'request_date' => CarbonImmutable::today(),
             'request_reason' => $data['remarks']
         ]);
-        $correction_requests = StampCorrectionRequest::with('user', 'attendance')->where('user_id', $user->id)->where('is_approval', true)->get();
+        $correction_requests = StampCorrectionRequest::with('user', 'attendance')
+            ->where('user_id', $user->id)
+            ->where('is_approval', true)
+            ->get();
         $this->get('stamp_correction_request/list?page=approved')
             ->assertViewHas('correction_requests', $correction_requests);
     }
 
     // 勤怠修正処理後に詳細確認
-    public function testCorrectionDetail()
+    public function testCorrectionDetail() :void
     {
         $user = User::find(1);
         $attendance = Attendance::where('user_id', $user->id)->first();
 
-        $this->get(route('attendance_detail', ['id' => $attendance->id]))->assertStatus(200);
+        $this->get(route('attendance_detail', ['attendance' => $attendance->id]))->assertStatus(200);
 
         $data = [
             'start' => '08:00',
             'end' => '17:00',
-            'newRest_start' => '10:00',
-            'newRest_end' => '10:10',
+            'rests' => [
+                [
+                    'start_time' => '10:00',
+                    'end_time' => '10:10',
+                ]
+            ],
             'remarks' => '電車遅延'
         ];
-        $this->postJson(route('correction', ['id' => $attendance->id]), $data)->assertStatus(302);
+        $this->postJson(route('correction', ['attendance' => $attendance->id]), $data)->assertStatus(302);
         $this->assertDatabaseHas('stamp_correction_requests', [
             'id' => 1,
             'user_id' => $user->id,
@@ -255,7 +275,10 @@ class CorrectionTest extends TestCase
             'request_reason' => $data['remarks']
         ]);
 
-        $this->get('stamp_correction_request/list')->assertStatus(200);
-        $this->get(route('attendance_detail', ['id' => $attendance->id]))->assertStatus(200);
+        $attendance = StampCorrectionRequest::with('user', 'attendance')
+            ->where('is_approval', false)
+            ->where('user_id', 1)
+            ->get();
+        $this->get('stamp_correction_request/list')->assertViewHas('correction_requests', $attendance);
     }
 }
