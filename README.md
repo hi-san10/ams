@@ -1,6 +1,14 @@
-# coachtech_ams
+# 勤怠管理アプリ Attendance management system
 
-## 勤怠管理アプリ
+## アプリ概要
+
+勤怠の打刻・休憩管理・勤怠一覧の確認ができる勤怠管理アプリです。
+
+### 主な機能
+- 出勤 / 退勤の打刻
+- 休憩の開始 / 終了
+- 日別の勤怠一覧表示
+- 管理者による勤怠確認
 
 ## 環境構築
 
@@ -20,21 +28,21 @@
 
 3. env.example ファイルから .env を作成し、docker-compose.ymlに応じて環境変数を変更
 
-    ・開発環境ではMailtrapサービスを使ってメール機能を開発しています
+    - 開発環境ではMailtrapサービスを使ってメール機能を開発しています
 
-    ・Mailtrap url:[https://mailtrap.io](https://mailtrap.io)
+    - Mailtrap url:[https://mailtrap.io](https://mailtrap.io)
 
-    ・アカウント作成後、ログインする
+    - アカウント作成後、ログインする
 
-    ・左メニューにある Email Testing リンク、もしくは画面中央あたりの Email Testing の「Start Testing」ボタンをクリック
+    - 左メニューにある Email Testing リンク、もしくは画面中央あたりの Email Testing の「Start Testing」ボタンをクリック
 
-    ・SMTP Settings タブをクリック
+    - SMTP Settings タブをクリック
 
-    ・Integrations セレクトボックスで、Laravel 7.x,8.x を選択
+    - Integrations セレクトボックスで、Laravel 7.x,8.x を選択
 
-    ・copy ボタンをクリックして、クリップボードに .env の情報を保存
+    - copy ボタンをクリックして、クリップボードに .env の情報を保存
 
-    ・.envにコピーした情報を貼り付ける
+    - .envにコピーした情報を貼り付ける
         ![75F1C55F-FC14-46BE-898D-9C25817259E9](https://github.com/user-attachments/assets/571e1894-4346-4b98-883d-af7e577a743e)
 
 4. php artisan key:generate
@@ -43,24 +51,26 @@
 
 6. php artisan db:seed
 
-・ 一般ユーザー(スタッフ)のダミーデータ10件分
+- 一般ユーザー(スタッフ)のダミーデータ10件分
 
-・ ログイン用ユーザーのダミーデータ1件分↓
+- ログイン用ユーザーのダミーデータ1件分↓
 ![Image](https://github.com/user-attachments/assets/a84c91c2-2a64-4604-b656-69e99cfe4551)
-・ 勤怠情報(出勤、退勤)のダミーデータ50件分
+- 勤怠情報(出勤、退勤)のダミーデータ50件分
 
-・ 勤怠情報(休憩)のダミーデータ50件分
+- 勤怠情報(休憩)のダミーデータ50件分
 
-・ 管理者のダミーデータ1件分
+- 管理者のダミーデータ1件分
 ![Image](https://github.com/user-attachments/assets/d7ed3551-3713-45a7-8c3f-25faa9eda3c6)
 
 ## 使用技術
 
-・PHP 8.3
+- PHP 8.3
 
-・Laravel 8.83
+- Laravel 8.83
 
-・MYSQL 8.0
+- MYSQL 8.0
+
+- Docker / Docker Compose
 
 ## ER図
 
@@ -74,15 +84,14 @@
 
 ![Image](https://github.com/user-attachments/assets/37162213-ddd8-42f4-b1ab-79050b4ec7cb)
 
+
+## 設計・実装のポイント
+- Docker環境を構築し、環境差異なく動作するよう設計
+- 打刻処理はバリデーションとビジネスロジックを分離
+- 責務を分けることによりテストしやすい構成にしている
 ## URL
 
-・アプリケーション(開発環境):[http//localhost/](http//localhost/)
+・アプリケーション(開発環境):[http://localhost/](http://localhost/)
 
-・phpMyAdmin:[http//localhost:8080](http/localhost:8080)
+・phpMyAdmin:[http://localhost:8080](http://localhost:8080)
 
-
-## 採点担当の方へ
-
-・テストケース"メール認証機能"に関しては、メール認証を完了した後の画面遷移が期待挙動と相違があります(認証後ログイン画面へ遷移)。
-
-　こちら模擬案件製作中に担当部門へ確認し了承を得ており、READMEに記載するよう指示がありましたのでご確認いただきたく思います。
