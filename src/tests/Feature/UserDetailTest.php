@@ -42,7 +42,7 @@ class UserDetailTest extends TestCase
         $user = User::find(1);
         $attendance = Attendance::where('user_id', $user->id)->first();
 
-        $this->get(route('attendance_detail', ['id' => $attendance->id]))->assertSee($user->name);
+        $this->get(route('attendance_detail', ['attendance' => $attendance->id]))->assertSee($user->name);
     }
 
     // 日付表示
@@ -51,7 +51,7 @@ class UserDetailTest extends TestCase
         $carbon = new CarbonImmutable();
         $attendance = Attendance::where('date', $carbon)->first();
 
-        $this->get(route('attendance_detail', ['id' => $attendance->id]))
+        $this->get(route('attendance_detail', ['attendance' => $attendance->id]))
             ->assertSee($attendance->date->format('m').'月'.$attendance->date->format('d').'日');
     }
 
@@ -60,10 +60,12 @@ class UserDetailTest extends TestCase
     {
         $user = User::find(1);
         $attendance = Attendance::where('user_id', $user->id)->first();
+        $start = CarbonImmutable::parse($attendance->start_time)->format('H:i');
+        $end = CarbonImmutable::parse($attendance->end_time)->format('H:i');
 
-        $response = $this->get(route('attendance_detail', ['id' => $attendance->id]));
-        $response->assertSee(substr($attendance->start_time, 0, 5));
-        $response->assertSee(substr($attendance->end_time, 0, 5));
+        $response = $this->get(route('attendance_detail', ['attendance' => $attendance->id]));
+        $response->assertSee($start);
+        $response->assertSee($end);
     }
 
     // 休憩時間確認
@@ -72,9 +74,11 @@ class UserDetailTest extends TestCase
         $user = User::find(1);
         $attendance = Attendance::where('user_id', $user->id)->first();
         $rest = Rest::where('attendance_id', $attendance->id)->first();
+        $start = CarbonImmutable::parse($rest->start_time)->format('H:i');
+        $end = CarbonImmutable::parse($rest->end_time)->format('H:i');
 
-        $response = $this->get(route('attendance_detail', ['id' => $attendance->id]));
-        $response->assertSee(substr($rest->start_time, 0, 5));
-        $response->assertSee(substr($rest->end_time, 0, 5));
+        $response = $this->get(route('attendance_detail', ['attendance' => $attendance->id]));
+        $response->assertSee($start);
+        $response->assertSee($end);
     }
 }
