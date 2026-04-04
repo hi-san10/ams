@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\AdminUser;
 use App\Models\Attendance;
+use App\Services\AttendanceService;
 use Carbon\CarbonImmutable;
 use Database\Seeders\UsersTableSeeder;
 use Database\Seeders\AdminUsersTableSeeder;
@@ -25,6 +26,10 @@ class AdminStaffAttendanceTest extends TestCase
         $this->seed(AdminUsersTableSeeder::class);
         $admin = AdminUser::find(1);
 
+        $this->seed(UsersTableSeeder::class);
+        $this->seed(AttendancesTableSeeder::class);
+        $this->seed(RestsTableSeeder::class);
+
         $this->get('/login')->assertStatus(200);
         $this->postJson('/admin/login', ['email' => $admin->email, 'password' => '00000000']);
         $this->assertTrue(Auth::guard('admins')->check());
@@ -33,7 +38,6 @@ class AdminStaffAttendanceTest extends TestCase
     //  スタッフ一覧画面
     public function testStaffList()
     {
-        $this->seed(UsersTableSeeder::class);
         $users = User::select('id', 'name', 'email')->get();
 
         $this->get('/admin/staff/list')->assertViewHas('users', $users);
@@ -42,32 +46,21 @@ class AdminStaffAttendanceTest extends TestCase
     // スタッフ別勤怠一覧確認
     public function testStaffAttendance()
     {
-        $this->seed(UsersTableSeeder::class);
-        $this->seed(AttendancesTableSeeder::class);
-        $this->seed(RestsTableSeeder::class);
         $user = User::find(1);
         $carbon = new CarbonImmutable();
 
-        $attendances = Attendance::with('rests')->where('user_id', $user->id)->whereYear('date', $carbon)->whereMonth('date', $carbon)
-            ->orderBy('date', 'asc')->get();
-        foreach ($attendances as $attendance) {
-            $start = new CarbonImmutable($attendance->start_time);
-            $end = new CarbonImmutable($attendance->end_time);
-            $workingTime = $start->diffInSeconds($end);
+        $attendances = Attendance::with('user', 'rests')
+            ->where('user_id', $user->id)
+            ->whereYear('date', $carbon)
+            ->whereMonth('date', $carbon)
+            ->orderBy('date', 'asc')
+            ->get();
 
-            $rests = $attendance->rests;
-            $number = 0;
-            foreach ($rests as $rest) {
-                $restStart = new CarbonImmutable($rest->start_time);
-                $restEnd = new CarbonImmutable($rest->end_time);
-                $diffRest = $restStart->diffInSeconds($restEnd);
-                $number = $number + $diffRest;
-            }
+        $service = new AttendanceService;
+        $result = $service->calculate($attendances);
 
-            $attendance->totalRest = gmdate('H:i:s', $number);
-            $attendance->totalWork = gmdate('H:i:s', $workingTime - $number);
-        }
-        $this->get(route('staff_attendance_list', ['id' => $user->id]))->assertViewHas('attendances', $attendances);
+        $this->get(route('staff_attendance_list', ['id' => $user->id]))
+            ->assertViewHas('attendances', $result);
     }
 
     /**
@@ -79,30 +72,17 @@ class AdminStaffAttendanceTest extends TestCase
     // スタッフ前月翌月勤怠確認
     public function testPreviousMonth($month)
     {
-        $this->seed(UsersTableSeeder::class);
-        $this->seed(AttendancesTableSeeder::class);
-        $this->seed(RestsTableSeeder::class);
         $user = User::find(1);
 
-        $attendances = Attendance::with('rests')->whereMonth('date', $month)->get();
-        foreach ($attendances as $attendance) {
-            $start = new CarbonImmutable($attendance->start_time);
-            $end = new CarbonImmutable($attendance->end_time);
-            $workingTime = $start->diffInSeconds($end);
+        $attendances = Attendance::with('user', 'rests')
+            ->whereMonth('date', $month)
+            ->get();
 
-            $rests = $attendance->rests;
-            $number = 0;
-            foreach ($rests as $rest) {
-                $restStart = new CarbonImmutable($rest->start_time);
-                $restEnd = new CarbonImmutable($rest->end_time);
-                $diffRest = $restStart->diffInSeconds($restEnd);
-                $number = $number + $diffRest;
-            }
+        $service = new AttendanceService;
+        $result = $service->calculate($attendances);
 
-            $attendance->totalRest = gmdate('H:i:s', $number);
-            $attendance->totalWork = gmdate('H:i:s', $workingTime - $number);
-        }
-        $this->get(route('staff_attendance_list', ['id' => $user->id, 'month' => $month]))->assertViewHas('attendances', $attendances);
+        $this->get(route('staff_attendance_list', ['id' => $user->id, 'month' => $month]))
+            ->assertViewHas('attendances', $result);
     }
 
     public function monthProvider()
@@ -123,12 +103,12 @@ class AdminStaffAttendanceTest extends TestCase
     // 勤怠詳細画面
     public function testDetail()
     {
-        $this->seed(UsersTableSeeder::class);
-        $this->seed(AttendancesTableSeeder::class);
-        $this->seed(RestsTableSeeder::class);
-        $attendance = Attendance::with('user', 'rests')->where('id', 1)->first();
+        $attendance = Attendance::with('user', 'rests')
+            ->where('id', 1)
+            ->first();
 
         $this->get('/admin/attendance/list')->assertStatus(200);
-        $this->get(route('attendance_detail', ['id' => $attendance->id]))->assertViewHas('attendance', $attendance);
+        $this->get(route('attendance_detail', ['attendance' => $attendance->id]))
+            ->assertViewHas('attendance', $attendance);
     }
 }
