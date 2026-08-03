@@ -13,7 +13,7 @@
 <body>
     <header class="ams-header">
         <div class="header-logo">
-            <img class="header-logo__img" src="{{ asset('img/logo.svg') }}" alt="">
+            <h1 class="header-logo__text">勤怠管理システム</h1>
         </div>
         @yield('header')
     </header>
