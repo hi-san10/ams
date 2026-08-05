@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -14,52 +15,24 @@ class RestsTableSeeder extends Seeder
      */
     public function run()
     {
-        $content = [
-            'attendance_id' => 1,
-            'start_time' => '10:00',
-            'end_time' => '10:10'
-        ];
+        $attendances = DB::table('attendances')->where('user_id', 2)->get();
 
-        DB::table('rests')->insert($content);
+        foreach ($attendances as $attendance) {
+            DB::table('rests')->insert([
+                'attendance_id' => $attendance->id,
+                'start_time' => '12:00',
+                'end_time' => '13:00',
+            ]);
 
-        $content = [
-            'attendance_id' => 2,
-            'start_time' => '10:00',
-            'end_time' => '10:10'
-        ];
-
-        DB::table('rests')->insert($content);
-
-        $content = [
-            'attendance_id' => 3,
-            'start_time' => '10:00',
-            'end_time' => '10:10'
-        ];
-
-        DB::table('rests')->insert($content);
-
-        $content = [
-            'attendance_id' => 4,
-            'start_time' => '10:00',
-            'end_time' => '10:10'
-        ];
-
-        DB::table('rests')->insert($content);
-
-        $content = [
-            'attendance_id' => 5,
-            'start_time' => '10:00',
-            'end_time' => '10:10'
-        ];
-
-        DB::table('rests')->insert($content);
-
-        $content = [
-            'attendance_id' => 6,
-            'start_time' => '10:00',
-            'end_time' => '10:10'
-        ];
-
-        DB::table('rests')->insert($content);
+            // 月・水・金は午前休憩も追加
+            $dayOfWeek = CarbonImmutable::parse($attendance->date)->dayOfWeek;
+            if (in_array($dayOfWeek, [1, 3, 5])) {
+                DB::table('rests')->insert([
+                    'attendance_id' => $attendance->id,
+                    'start_time' => '10:00',
+                    'end_time' => '10:15',
+                ]);
+            }
+        }
     }
 }

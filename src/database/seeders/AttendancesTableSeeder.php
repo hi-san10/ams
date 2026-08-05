@@ -15,60 +15,20 @@ class AttendancesTableSeeder extends Seeder
      */
     public function run()
     {
-        $carbon = new CarbonImmutable();
+        $start = CarbonImmutable::now()->subMonthNoOverflow()->startOfMonth();
+        $end = $start->endOfMonth();
 
-        $content = [
-            'user_id' => '1',
-            'date' => $carbon,
-            'start_time' => '08:00',
-            'end_time' => '17:00'
-        ];
-
-        DB::table('attendances')->insert($content);
-
-        $content = [
-            'user_id' => '1',
-            'date' => $carbon->subMonthNoOverflow(1),
-            'start_time' => '08:00',
-            'end_time' => '17:00'
-        ];
-
-        DB::table('attendances')->insert($content);
-
-        $content = [
-            'user_id' => '1',
-            'date' => $carbon->addMonthNoOverflow(1),
-            'start_time' => '08:00',
-            'end_time' => '17:00'
-        ];
-
-        DB::table('attendances')->insert($content);
-
-        $content = [
-            'user_id' => '2',
-            'date' => $carbon,
-            'start_time' => '08:00',
-            'end_time' => '17:00'
-        ];
-
-        DB::table('attendances')->insert($content);
-
-        $content = [
-            'user_id' => '2',
-            'date' => $carbon->subDay(1),
-            'start_time' => '08:00',
-            'end_time' => '17:00'
-        ];
-
-        DB::table('attendances')->insert($content);
-
-        $content = [
-            'user_id' => '2',
-            'date' => $carbon->addDay(1),
-            'start_time' => '08:00',
-            'end_time' => '17:00'
-        ];
-
-        DB::table('attendances')->insert($content);
+        $date = $start;
+        while ($date->lte($end)) {
+            if (!$date->isWeekend()) {
+                DB::table('attendances')->insert([
+                    'user_id' => 2,
+                    'date' => $date->toDateString(),
+                    'start_time' => '08:00',
+                    'end_time' => '17:00',
+                ]);
+            }
+            $date = $date->addDay();
+        }
     }
 }
