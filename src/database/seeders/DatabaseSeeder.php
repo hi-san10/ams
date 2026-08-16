@@ -18,8 +18,8 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminUsersTableSeeder::class);
         $this->call(UsersTableSeeder::class);
         \App\Models\User::factory(10)->create();
-        // Attendance::factory(50)->create();
-        // Rest::factory(50)->create();
+        Attendance::factory(50)->create();
+        Rest::factory(50)->create();
         $this->call(AttendancesTableSeeder::class);
         $this->call(RestsTableSeeder::class);
     }
