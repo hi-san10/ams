@@ -132,15 +132,15 @@
 
 ## ER図
 
-![ER図画像](https://github.com/user-attachments/assets/a64d9dba-e1d8-4cc6-b618-aa4c5e3c5e5e)
+![ER図画像](docs/images/er.jpeg)
 
 ## テーブル仕様書
 
-![テーブル仕様書画像1](https://github.com/user-attachments/assets/849b7365-c72a-43b7-a5e9-3dbedc692991)
+![テーブル仕様書画像1](docs/images/table-1.jpeg)
 
-![テーブル仕様書画像2](https://github.com/user-attachments/assets/700867ca-dbd5-444d-b186-6b6d93e4649d)
+![テーブル仕様書画像2](docs/images/table-2.jpeg)
 
-![テーブル仕様書画像3](https://github.com/user-attachments/assets/37162213-ddd8-42f4-b1ab-79050b4ec7cb)
+![テーブル仕様書画像3](docs/images/table-3.jpeg)
 
 
 ## 設計・実装のポイント
