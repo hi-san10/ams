@@ -207,7 +207,8 @@ public function correction($request, $attendance)
 ```
 ## URL
 
+・アプリケーション(本番環境):[http://ec2-35-72-97-239.ap-northeast-1.compute.amazonaws.com](http://ec2-35-72-97-239.ap-northeast-1.compute.amazonaws.com)
+
 ・アプリケーション(開発環境):[http://localhost/](http://localhost/)
 
-・phpMyAdmin:[http://localhost:8080](http://localhost:8080)
-
+・phpMyAdmin(開発環境):[http://localhost:8080](http://localhost:8080)
