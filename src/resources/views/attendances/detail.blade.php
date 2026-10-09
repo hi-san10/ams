@@ -86,12 +86,8 @@
             <tr>
                 <th class="left-bottom">備考</th>
                 <td colspan="3">
-                    <textarea name="remarks" id="" class="remarks" value="">
-                        @if (is_null($hasStampCorrectionRequest))
-                            {{ old('remarks') }}
-                        @else
-                            {{ $hasStampCorrectionRequest->request_reason }}
-                        @endif
+                    <textarea name="remarks" class="remarks">
+                        {{ trim(is_null($hasStampCorrectionRequest) ? old('remarks') : $hasStampCorrectionRequest->request_reason) }}
                     </textarea>
                     <div style="color: red;">
                         @error('remarks')
@@ -99,7 +95,6 @@
                         @enderror
                     </div>
                 </td>
-                <td></td>
             </tr>
         </table>
 

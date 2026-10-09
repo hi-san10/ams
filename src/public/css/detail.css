@@ -3,8 +3,10 @@ body {
 }
 
 .detail-container {
-    width: 60%;
+    width: 100%;
+    max-width: 900px;
     margin: auto;
+    padding: 0 16px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -13,13 +15,13 @@ body {
 
 .detail-title {
     width: 100%;
-    margin: 4% 0 3% 0;
+    margin: 32px 0 24px;
 }
 
 .title-text {
     width: 100%;
     border-left: 10px solid black;
-    padding-left: 1%;
+    padding-left: 12px;
 }
 
 .detail__form {
@@ -35,12 +37,14 @@ table {
 
 th {
     text-align: left;
-    padding: 0 50px 0 50px;
+    padding: 0 50px;
+    white-space: nowrap;
 }
 
 td {
     font-weight: bold;
     text-align: center;
+    padding: 0 4px;
 }
 
 th, td {
@@ -52,27 +56,33 @@ tr {
 }
 
 .top {
-    border-radius: 5px 5px 0 0 ;
+    border-radius: 5px 5px 0 0;
 }
 
 .left-top {
-    border-radius: 5px 0 0 0 ;
+    border-radius: 5px 0 0 0;
 }
 
 .right-top {
-    border-radius: 0 5px 0 0 ;
+    border-radius: 0 5px 0 0;
 }
 
-input {
-    border: 0.1px solid gray;
+.attendance-time {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 140px;
+    height: 32px;
+    border: 1px solid gray;
     border-radius: 5px;
     text-align: center;
 }
 
 .remarks {
-    border: 0.1px solid gray;
+    box-sizing: border-box;
+    border: 1px solid gray;
     border-radius: 5px;
     margin-top: 5px;
+    padding: 8px;
     text-align: center;
     width: 85%;
 }
@@ -82,20 +92,20 @@ input {
     color: white;
     display: block;
     margin-left: auto;
-    width: 10%;
-    height: 15%;
-    margin-top: 3%;
+    padding: 8px 32px;
+    border-radius: 5px;
+    margin-top: 24px;
 }
 
 .pending__text {
     color: red;
     text-align: right;
-    margin-top: 3%;
+    margin-top: 24px;
 }
 
 .approval__text {
     text-align: right;
-    margin-top: 3%;
+    margin-top: 24px;
     font-weight: bold;
 }
 
@@ -110,10 +120,28 @@ input {
     background-color: #696969;
     color: white;
     margin-left: auto;
-    width: 10%;
-    height: 15%;
-    margin-top: 3%;
+    width: fit-content;
+    padding: 8px 32px;
+    margin-top: 24px;
     text-align: center;
     border-radius: 5px;
 }
 
+@media (max-width: 768px) {
+    .title-text {
+        font-size: 24px;
+    }
+
+    th {
+        padding: 0 12px;
+        font-size: 14px;
+    }
+
+    td {
+        font-size: 14px;
+    }
+
+    .attendance-time {
+        font-size: 14px;
+    }
+}
