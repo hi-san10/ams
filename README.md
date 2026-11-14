@@ -207,7 +207,9 @@ public function correction($request, $attendance)
 ```
 ## URL
 
-・アプリケーション(本番環境):[http://ec2-35-72-97-239.ap-northeast-1.compute.amazonaws.com](http://ec2-35-72-97-239.ap-northeast-1.compute.amazonaws.com)
+・操作動画(ポートフォリオ):[https://hi-san10-portfolio.vercel.app/case-studies/ams](https://hi-san10-portfolio.vercel.app/case-studies/ams)
+
+※AWS EC2で公開していたデモ環境は現在停止しています。
 
 ・アプリケーション(開発環境):[http://localhost/](http://localhost/)
 
